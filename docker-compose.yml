@@ -12,7 +12,7 @@ services:
       - DB_URL=jdbc:h2:mem:camunda;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
       - DB_USERNAME=sa
       - DB_PASSWORD=""
-      - WAIT_FOR=""
+
     volumes:
       - ./src/processes:/camunda/processes:ro  # BPMN process definitions
     healthcheck:

@@ -1,0 +1,18 @@
+{
+    "$schema": "https://json.schemastore.org/mcp.json",
+    "description": "procos Development MCP Server Configuration with Dev Project Initializer",
+    "mcpServers": {
+        "neo4j-memory": {
+            "command": "uvx",
+            "args": [
+                "mcp-neo4j-memory",
+                "--db-url",
+                "neo4j://localhost:9688",
+                "--username",
+                "neo4j",
+                "--password",
+                "devmemorypass"
+            ]
+        }
+    }
+}

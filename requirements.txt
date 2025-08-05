@@ -9,7 +9,7 @@ python-dotenv==1.0.0            # Environment variable management
 
 # Camunda Integration
 camunda-external-task-client-python3==4.2.0  # External task workers
-zeebe-grpc==8.2.4               # Optional: Zeebe integration
+zeebe-grpc==8.2.15               # Optional: Zeebe integration
 
 # Message Broker
 pika==1.3.2                     # RabbitMQ client

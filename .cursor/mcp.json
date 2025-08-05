@@ -1,0 +1,41 @@
+{
+    "$schema": "https://json.schemastore.org/mcp.json",
+    "description": "procos Development MCP Server Configuration with Dev Project Initializer",
+    "mcpServers": {
+        "neo4j-memory": {
+            "command": "uvx",
+            "args": [
+                "mcp-neo4j-memory",
+                "--db-url",
+                "neo4j://localhost:9688",
+                "--username",
+                "neo4j",
+                "--password",
+                "devmemorypass"
+            ]
+        },
+        "neo4j-cypher": {
+            "command": "uvx",
+            "args": [
+                "mcp-neo4j-cypher",
+                "--db-url",
+                "neo4j+s://demo.neo4jlabs.com",
+                "--username",
+                "recommendations",
+                "--password",
+                "recommendations"
+            ]
+        },
+        "huggingface-mcp": {
+            "command": "uvx",
+            "args": [
+                "--from",
+                "git+https://github.com/shreyaskarnik/huggingface-mcp-server.git",
+                "huggingface"
+            ],
+            "env": {
+                "HF_TOKEN": "${HF_TOKEN}"
+            }
+        }
+    }
+}

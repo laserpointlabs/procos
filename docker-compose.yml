@@ -8,10 +8,11 @@ services:
     ports:
       - "8080:8080"  # Camunda web interface and REST API
     environment:
-      - DB_DRIVER=org.h2.Driver
-      - DB_URL=jdbc:h2:mem:camunda;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-      - DB_USERNAME=sa
-      - DB_PASSWORD=""
+      - DB_DRIVER=org.postgresql.Driver
+      - DB_URL=jdbc:postgresql://postgres:5432/procos
+      - DB_USERNAME=procos
+      - DB_PASSWORD=procos123
+      - WAIT_FOR_DB=postgres:5432
 
     volumes:
       - ./src/processes:/camunda/processes:ro  # BPMN process definitions
@@ -21,6 +22,9 @@ services:
       timeout: 10s
       retries: 5
       start_period: 90s
+    depends_on:
+      postgres:
+        condition: service_healthy
     networks:
       - procos-network
 
@@ -60,6 +64,27 @@ services:
     networks:
       - procos-network
 
+  # Ollama - Local LLM inference server for AI worker (CPU mode)
+  ollama:
+    image: ollama/ollama:latest
+    container_name: procos-ollama
+    ports:
+      - "11434:11434"  # Ollama API port
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_KEEP_ALIVE=24h
+      - OLLAMA_HOST=0.0.0.0
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    networks:
+      - procos-network
+    restart: unless-stopped
+
   # PostgreSQL - Persistent data storage (optional, for production)
   postgres:
     image: postgres:15-alpine
@@ -80,8 +105,7 @@ services:
       retries: 5
     networks:
       - procos-network
-    profiles:
-      - production  # Only start in production profile
+    # PostgreSQL now required for persistent storage
 
 volumes:
   rabbitmq_data:
@@ -90,12 +114,15 @@ volumes:
     driver: local
   postgres_data:
     driver: local
+  ollama_data:
+    driver: local
 
 networks:
   procos-network:
     driver: bridge
     name: procos-network
 
-# Development override - faster startup with H2 database
-# To use: docker-compose -f docker-compose.yml up
-# For production: docker-compose --profile production up
+# ProcOS Infrastructure Stack
+# PostgreSQL now required for persistent process data storage
+# To start: docker-compose up -d
+# To stop: docker-compose down

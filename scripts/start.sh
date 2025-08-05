@@ -262,6 +262,7 @@ show_status() {
     echo "  • Camunda Cockpit:   http://localhost:8080/camunda"
     echo "  • RabbitMQ Admin:    http://localhost:15672 (procos/procos123)"
     echo "  • Redis:             localhost:6379"
+    echo "  • Ollama API:        http://localhost:11434"
     echo ""
     echo "🔧 Management Commands:"
     echo "  • Stop system:       ./scripts/stop.sh"

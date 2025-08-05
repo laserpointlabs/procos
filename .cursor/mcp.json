@@ -19,11 +19,11 @@
             "args": [
                 "mcp-neo4j-cypher",
                 "--db-url",
-                "neo4j+s://demo.neo4jlabs.com",
+                "neo4j://localhost:9688",
                 "--username",
-                "recommendations",
+                "neo4j",
                 "--password",
-                "recommendations"
+                "devmemorypass"
             ]
         },
         "huggingface-mcp": {

@@ -123,12 +123,26 @@ BPMN process definitions:
 - 📋 **Planned**: Advanced workers and production deployment
 - 🎯 **Goal**: MVP backend within 1 week
 
+## 📋 **For New Team Members & Development Sessions**
+
+**NEW TO THE PROJECT?** Start here: **[PROJECT_CONTEXT_TRANSFER.md](./PROJECT_CONTEXT_TRANSFER.md)**
+
+This comprehensive document provides:
+- 🎯 **Complete Project Context**: What ProcOS is and why it exists
+- 🔄 **Migration Story**: How we got from DADMS to ProcOS
+- 🏗️ **Current Architecture**: What's built, what's TODO
+- 🚀 **Development Guide**: Immediate next steps and workflows
+- 🧠 **Technical Decisions**: Key choices and patterns
+- 💡 **AI Assistant Instructions**: Perfect for new development sessions
+
 ## 🤝 **Contributing**
 
-1. **Read the docs**: Start with [ProcOS for Dummies](./docs/architecture/ProcOS_For_Dummies.md)
-2. **Set up locally**: Follow the [Implementation Guide](./docs/architecture/ProcOS_Implementation_Guide_Part1.md)
-3. **Run tests**: `pytest tests/`
-4. **Submit PRs**: Focus on workers and process definitions
+1. **Read the context**: Start with [PROJECT_CONTEXT_TRANSFER.md](./PROJECT_CONTEXT_TRANSFER.md)
+2. **Learn the basics**: [ProcOS for Dummies](./docs/architecture/ProcOS_For_Dummies.md)
+3. **Technical deep-dive**: [Implementation Guide](./docs/architecture/ProcOS_Implementation_Guide_Part1.md)
+4. **Set up locally**: Follow the [Quick Start Guide](./QUICK_START.md)
+5. **Run tests**: `pytest tests/` (when implemented)
+6. **Submit PRs**: Focus on workers and process definitions
 
 ## 📄 **License**
 

@@ -1,5 +1,11 @@
 # ProcOS Alpha Release v1.0.0-alpha.3
 
+## 📅 Release Information
+- **Release Date**: August 5, 2025
+- **Release Type**: Alpha Release (Complete Microkernel with AI Infrastructure)
+- **Version**: v1.0.0-alpha.3
+- **Branch**: release/v1.0.0-alpha.3
+
 ## 🚀 Release Overview
 Complete microkernel implementation with AI infrastructure foundation for ProcOS (Process-Oriented Operating System).
 

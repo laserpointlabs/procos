@@ -1,0 +1,101 @@
+version: '3.8'
+
+services:
+  # Camunda Platform - The heart of ProcOS
+  camunda:
+    image: camunda/camunda-bpm-platform:latest
+    container_name: procos-camunda
+    ports:
+      - "8080:8080"  # Camunda web interface and REST API
+    environment:
+      - DB_DRIVER=org.h2.Driver
+      - DB_URL=jdbc:h2:mem:camunda;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+      - DB_USERNAME=sa
+      - DB_PASSWORD=""
+      - WAIT_FOR=""
+    volumes:
+      - ./src/processes:/camunda/processes:ro  # BPMN process definitions
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/engine-rest/engine"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+    networks:
+      - procos-network
+
+  # RabbitMQ - Message broker for worker communication
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: procos-rabbitmq
+    ports:
+      - "5672:5672"   # AMQP port
+      - "15672:15672" # Management UI
+    environment:
+      - RABBITMQ_DEFAULT_USER=procos
+      - RABBITMQ_DEFAULT_PASS=procos123
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    networks:
+      - procos-network
+
+  # Redis - Caching and session storage
+  redis:
+    image: redis:7-alpine
+    container_name: procos-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - procos-network
+
+  # PostgreSQL - Persistent data storage (optional, for production)
+  postgres:
+    image: postgres:15-alpine
+    container_name: procos-postgres
+    environment:
+      - POSTGRES_DB=procos
+      - POSTGRES_USER=procos
+      - POSTGRES_PASSWORD=procos123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U procos"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - procos-network
+    profiles:
+      - production  # Only start in production profile
+
+volumes:
+  rabbitmq_data:
+    driver: local
+  redis_data:
+    driver: local
+  postgres_data:
+    driver: local
+
+networks:
+  procos-network:
+    driver: bridge
+    name: procos-network
+
+# Development override - faster startup with H2 database
+# To use: docker-compose -f docker-compose.yml up
+# For production: docker-compose --profile production up

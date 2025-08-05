@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.0.0">
+  <bpmn:process id="system_orchestrator" name="ProcOS System Orchestrator" isExecutable="true">
+    <bpmn:startEvent id="start_orchestrator" name="Start System">
+      <bpmn:outgoing>Flow_initialize</bpmn:outgoing>
+    </bpmn:startEvent>
+    
+    <bpmn:serviceTask id="initialize_system" name="Initialize Core Services" camunda:type="external" camunda:topic="system_initialization">
+      <bpmn:incoming>Flow_initialize</bpmn:incoming>
+      <bpmn:outgoing>Flow_start_workers</bpmn:outgoing>
+    </bpmn:serviceTask>
+    
+    <bpmn:serviceTask id="start_workers" name="Start Worker Pools" camunda:type="external" camunda:topic="worker_management">
+      <bpmn:incoming>Flow_start_workers</bpmn:incoming>
+      <bpmn:outgoing>Flow_health_monitoring</bpmn:outgoing>
+    </bpmn:serviceTask>
+    
+    <bpmn:serviceTask id="health_monitoring" name="Start Health Monitoring" camunda:type="external" camunda:topic="health_monitoring">
+      <bpmn:incoming>Flow_health_monitoring</bpmn:incoming>
+      <bpmn:outgoing>Flow_wait_for_requests</bpmn:outgoing>
+    </bpmn:serviceTask>
+    
+    <bpmn:eventBasedGateway id="wait_for_requests" name="Wait for Requests">
+      <bpmn:incoming>Flow_wait_for_requests</bpmn:incoming>
+      <bpmn:incoming>Flow_continue_monitoring</bpmn:incoming>
+      <bpmn:outgoing>Flow_user_request</bpmn:outgoing>
+      <bpmn:outgoing>Flow_health_check</bpmn:outgoing>
+      <bpmn:outgoing>Flow_shutdown_signal</bpmn:outgoing>
+    </bpmn:eventBasedGateway>
+    
+    <bpmn:intermediateCatchEvent id="user_request_event" name="User Request">
+      <bpmn:incoming>Flow_user_request</bpmn:incoming>
+      <bpmn:outgoing>Flow_route_request</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_user_request" messageRef="Message_user_request"/>
+    </bpmn:intermediateCatchEvent>
+    
+    <bpmn:serviceTask id="route_request" name="Route User Request" camunda:type="external" camunda:topic="request_routing">
+      <bpmn:incoming>Flow_route_request</bpmn:incoming>
+      <bpmn:outgoing>Flow_continue_monitoring</bpmn:outgoing>
+    </bpmn:serviceTask>
+    
+    <bpmn:intermediateCatchEvent id="health_check_timer" name="Health Check Timer">
+      <bpmn:incoming>Flow_health_check</bpmn:incoming>
+      <bpmn:outgoing>Flow_perform_health_check</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_health">
+        <bpmn:timeDuration>PT30S</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:intermediateCatchEvent>
+    
+    <bpmn:serviceTask id="perform_health_check" name="Perform Health Check" camunda:type="external" camunda:topic="health_monitoring">
+      <bpmn:incoming>Flow_perform_health_check</bpmn:incoming>
+      <bpmn:outgoing>Flow_continue_monitoring</bpmn:outgoing>
+    </bpmn:serviceTask>
+    
+    <bpmn:intermediateCatchEvent id="shutdown_signal_event" name="Shutdown Signal">
+      <bpmn:incoming>Flow_shutdown_signal</bpmn:incoming>
+      <bpmn:outgoing>Flow_graceful_shutdown</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_shutdown" messageRef="Message_shutdown"/>
+    </bpmn:intermediateCatchEvent>
+    
+    <bpmn:serviceTask id="graceful_shutdown" name="Graceful System Shutdown" camunda:type="external" camunda:topic="system_shutdown">
+      <bpmn:incoming>Flow_graceful_shutdown</bpmn:incoming>
+      <bpmn:outgoing>Flow_end</bpmn:outgoing>
+    </bpmn:serviceTask>
+    
+    <bpmn:endEvent id="end_orchestrator" name="System Stopped">
+      <bpmn:incoming>Flow_end</bpmn:incoming>
+    </bpmn:endEvent>
+    
+    <!-- Sequence Flows -->
+    <bpmn:sequenceFlow id="Flow_initialize" sourceRef="start_orchestrator" targetRef="initialize_system"/>
+    <bpmn:sequenceFlow id="Flow_start_workers" sourceRef="initialize_system" targetRef="start_workers"/>
+    <bpmn:sequenceFlow id="Flow_health_monitoring" sourceRef="start_workers" targetRef="health_monitoring"/>
+    <bpmn:sequenceFlow id="Flow_wait_for_requests" sourceRef="health_monitoring" targetRef="wait_for_requests"/>
+    <bpmn:sequenceFlow id="Flow_user_request" sourceRef="wait_for_requests" targetRef="user_request_event"/>
+    <bpmn:sequenceFlow id="Flow_health_check" sourceRef="wait_for_requests" targetRef="health_check_timer"/>
+    <bpmn:sequenceFlow id="Flow_shutdown_signal" sourceRef="wait_for_requests" targetRef="shutdown_signal_event"/>
+    <bpmn:sequenceFlow id="Flow_route_request" sourceRef="user_request_event" targetRef="route_request"/>
+    <bpmn:sequenceFlow id="Flow_perform_health_check" sourceRef="health_check_timer" targetRef="perform_health_check"/>
+    <bpmn:sequenceFlow id="Flow_continue_monitoring" sourceRef="route_request" targetRef="wait_for_requests"/>
+    <bpmn:sequenceFlow id="Flow_continue_monitoring" sourceRef="perform_health_check" targetRef="wait_for_requests"/>
+    <bpmn:sequenceFlow id="Flow_graceful_shutdown" sourceRef="shutdown_signal_event" targetRef="graceful_shutdown"/>
+    <bpmn:sequenceFlow id="Flow_end" sourceRef="graceful_shutdown" targetRef="end_orchestrator"/>
+  </bpmn:process>
+  
+  <!-- Message Definitions -->
+  <bpmn:message id="Message_user_request" name="user_request"/>
+  <bpmn:message id="Message_shutdown" name="shutdown_signal"/>
+  
+  <!-- Diagram (Basic Layout) -->
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="system_orchestrator">
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="start_orchestrator">
+        <dc:Bounds x="152" y="102" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="138" y="145" width="65" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ServiceTask_1_di" bpmnElement="initialize_system">
+        <dc:Bounds x="240" y="80" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_1_di" bpmnElement="end_orchestrator">
+        <dc:Bounds x="952" y="102" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="933" y="145" width="75" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

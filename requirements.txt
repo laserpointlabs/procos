@@ -1,0 +1,60 @@
+# ProcOS - Process-Oriented Operating System
+# Python Dependencies
+
+# Core Framework
+flask==2.3.3                    # Web framework for health dashboard
+requests==2.31.0                # HTTP client for API calls
+pydantic==2.4.2                 # Data validation and settings management
+python-dotenv==1.0.0            # Environment variable management
+
+# Camunda Integration
+camunda-external-task-client-python3==4.2.0  # External task workers
+zeebe-grpc==8.2.4               # Optional: Zeebe integration
+
+# Message Broker
+pika==1.3.2                     # RabbitMQ client
+redis==5.0.1                    # Redis client for caching
+
+# AI/LLM Integration
+openai==1.3.5                   # OpenAI API client
+ollama==0.1.7                   # Ollama local LLM client
+
+# Data Processing
+pandas==2.1.3                   # Data manipulation
+numpy==1.24.3                   # Numerical computing
+
+# Async/Concurrency
+asyncio-mqtt==0.13.0            # MQTT async client
+aiohttp==3.9.0                  # Async HTTP client
+
+# Utilities
+click==8.1.7                    # Command line interface
+rich==13.6.0                    # Terminal formatting
+colorlog==6.7.0                 # Colored logging
+schedule==1.2.0                 # Task scheduling
+
+# Development Tools
+pytest==7.4.3                   # Testing framework
+pytest-asyncio==0.21.1          # Async testing support
+pytest-mock==3.12.0             # Mocking for tests
+black==23.9.1                   # Code formatting
+flake8==6.1.0                   # Code linting
+mypy==1.6.1                     # Type checking
+
+# Monitoring & Observability
+prometheus-client==0.18.0       # Metrics collection
+psutil==5.9.6                   # System monitoring
+
+# Optional: Database drivers (for production)
+psycopg2-binary==2.9.7          # PostgreSQL driver
+sqlalchemy==2.0.23              # ORM for database operations
+
+# Optional: Additional integrations
+python-telegram-bot==20.6       # Telegram bot integration
+sendgrid==6.10.0                # Email service integration
+twilio==8.10.0                  # SMS service integration
+
+# Development dependencies (install with: pip install -r requirements-dev.txt)
+# jupyter==1.0.0                # Notebook environment
+# ipython==8.17.2               # Enhanced Python shell
+# sphinx==7.2.6                 # Documentation generation

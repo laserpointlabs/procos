@@ -36,6 +36,7 @@ sys.path.append(str(Path(__file__).parent.parent))
 from utils.logging_config import get_kernel_logger
 
 logger = get_kernel_logger("kernel")
+console = Console()
 
 class ProcOSConfig:
     """Configuration management for ProcOS"""

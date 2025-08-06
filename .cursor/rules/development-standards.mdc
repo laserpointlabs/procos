@@ -1,10 +1,5 @@
----
-description: 
-globs: 
-alwaysApply: true
----
 
-# DADMS Development Standards & Best Practices
+# Development Standards & Best Practices
 
 ## 🎯 Core Development Standards
 
@@ -14,7 +9,7 @@ I will **automatically** enforce these standards during all development activiti
 
 #### **Utility Scripts Location**
 - **ALL utility scripts** must be placed in the `scripts/` folder
-- **NO scripts** at the project root level (except `dadms-start.sh`)
+- **NO scripts** at the project root level (except main management script)
 - Script categories:
   - `scripts/setup/` - Setup and installation scripts
   - `scripts/backup/` - Backup and restore utilities
@@ -34,7 +29,7 @@ I will **automatically** enforce these standards during all development activiti
 
 #### **Project Structure Enforcement**
 ```
-dadms/
+project/
 ├── docs/                    # ALL documentation here
 │   ├── architecture/        # System design, diagrams
 │   ├── api/                # API specs, endpoints
@@ -47,12 +42,13 @@ dadms/
 │   ├── deploy/             # Deployment scripts
 │   ├── dev/                # Development helpers
 │   └── testing/            # Test utilities
-├── dadms-services/         # Microservices code
-├── dadms-ui/              # Frontend application
-├── dadms-infrastructure/   # Container configs
+├── src/                    # Source code
+├── services/               # Microservices code
+├── ui/                     # Frontend application
+├── infrastructure/         # Container configs
 ├── .cursor/               # Cursor configuration
 ├── backups/               # Generated backups
-└── dadms-start.sh         # Main management script
+└── start.sh               # Main management script
 ```
 
 ### 🏗️ **Architecture Documentation Standards**
@@ -79,7 +75,7 @@ dadms/
 
 #### **Service Structure (Node.js/TypeScript)**
 ```
-dadms-services/service-name/
+services/service-name/
 ├── src/
 │   ├── routes/             # API route handlers
 │   ├── controllers/        # Business logic
@@ -99,7 +95,7 @@ dadms-services/service-name/
 
 #### **Frontend Structure (React/TypeScript)**
 ```
-dadms-ui/
+ui/
 ├── src/
 │   ├── components/        # Reusable UI components
 │   ├── pages/            # Page-level components
@@ -152,7 +148,7 @@ git checkout -b experiment/research-topic
 - ✅ **Architecture modifications** or new service additions
 - ✅ **Performance optimizations** or refactoring work
 - ✅ **Security updates** or dependency changes
-- ✅ **System stabilization** work (like Neo4j startup fixes)
+- ✅ **System stabilization** work
 
 **Safe for main branch (exceptions):**
 - 📝 Minor documentation fixes (typos, formatting only)
@@ -194,11 +190,11 @@ git checkout -b experiment/research-topic
 
 #### **Service Port Allocation**
 - **UI**: 3000
-- **Project Service**: 3001
-- **LLM Service**: 3002
-- **Knowledge Service**: 3003
-- **Event Manager**: 3004
-- **DAS (Digital Assistance)**: 3005
+- **Service 1**: 3001
+- **Service 2**: 3002
+- **Service 3**: 3003
+- **Service 4**: 3004
+- **Service 5**: 3005
 - **Testing/Development**: 9999+ (avoid 3000-3021)
 
 #### **Infrastructure Ports**
@@ -206,7 +202,7 @@ git checkout -b experiment/research-topic
 - **Neo4j Main**: 7474/7687
 - **Neo4j Memory**: 7475/7688
 - **Redis**: 6379
-- **Qdrant**: 6333
+- **Message Broker**: 5672/15672
 
 ### 🛡️ **Security & Configuration Standards**
 
@@ -240,9 +236,9 @@ git checkout -b experiment/research-topic
 ### 🧠 **Memory System Organization**
 
 #### **Structured Memory Hierarchy**
-The DADMS memory system uses a hierarchical structure to organize development knowledge:
+The project memory system uses a hierarchical structure to organize development knowledge:
 
-**Root Node**: `DADMS_Development`
+**Root Node**: `Project_Development`
 - **Infrastructure Development**: Container orchestration, Docker configs, service management
 - **Backend Development**: Microservices, APIs, databases, business logic
 - **UI Development**: Frontend components, user interface, React/TypeScript
@@ -252,7 +248,7 @@ The DADMS memory system uses a hierarchical structure to organize development kn
 #### **Memory Organization Rules**
 - **Always categorize memories** by development category
 - **Connect related memories** using appropriate relationship types
-- **Use consistent naming**: `DADMS_Category_Specific_Topic`
+- **Use consistent naming**: `Project_Category_Specific_Topic`
 - **Link to root node** when creating new development memories
 - **Maintain relationships** between related problems and solutions
 
@@ -260,12 +256,12 @@ The DADMS memory system uses a hierarchical structure to organize development kn
 ```javascript
 // Example memory structure
 {
-  name: "DADMS_Infrastructure_Neo4j_Startup_Fix",
+  name: "Project_Infrastructure_Container_Startup_Fix",
   type: "problem_solution",
-  category: "DADMS_Infrastructure_Development",
+  category: "Project_Infrastructure_Development",
   relationships: [
     { target: "Docker_Compose_Configuration", type: "implements" },
-    { target: "DADMS_Infrastructure_Development", type: "belongs_to" }
+    { target: "Project_Infrastructure_Development", type: "belongs_to" }
   ]
 }
 ```
@@ -277,7 +273,7 @@ When performing any release, **automatically** follow this process:
 
 1. **Pre-Release Memory Backup** (MANDATORY)
    ```bash
-   ./dadms-start.sh backup
+   ./start.sh backup
    # Verify backup was created
    ls -la backups/mcp-memory/mcp-memory-backup-*.cypher.gz
    ```
@@ -298,8 +294,8 @@ When performing any release, **automatically** follow this process:
 
 4. **Testing and Verification**
    ```bash
-   ./dadms-start.sh stop && ./dadms-start.sh start-quick
-   ./dadms-start.sh status
+   ./start.sh stop && ./start.sh start-quick
+   ./start.sh status
    ./scripts/dev/container-diagnostic.sh
    ```
 
@@ -310,7 +306,7 @@ When performing any release, **automatically** follow this process:
    git push origin v2.0.1-alpha.1
    
    # Create GitHub release
-   gh release create v2.0.1-alpha.1 --title "DADMS Alpha Release" --notes-file RELEASE_NOTES.md --prerelease
+   gh release create v2.0.1-alpha.1 --title "Project Alpha Release" --notes-file RELEASE_NOTES.md --prerelease
    ```
 
 6. **Release Notes Template**
@@ -393,6 +389,11 @@ When performing any release, **automatically** follow this process:
 - **Database queries** optimized with indexes
 - **Caching strategies** for frequently accessed data
 - **Async/await** for I/O operations
+- **Resource cleanup** to prevent memory leaks
+
+---
+
+**These standards ensure consistent, maintainable, and professional development practices across the entire project platform.**
 - **Resource cleanup** to prevent memory leaks
 
 ---

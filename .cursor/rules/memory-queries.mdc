@@ -1,10 +1,5 @@
----
-description: Advanced memory search and management capabilities for DADMS project. Use this rule when the user asks about previous decisions, wants to recall past solutions, or needs to understand existing system architecture. This provides tools for searching stored memories, retrieving project context, and managing knowledge continuity across development sessions.
-globs: 
-alwaysApply: false
----
 
-# DADMS Memory Query & Management
+# Project Memory Query & Management
 
 ## When to Use This Rule
 - User asks "What did we decide about...?"
@@ -36,6 +31,11 @@ alwaysApply: false
 ## Memory Tools Available
 - Search memories by keywords
 - Find entities by name
+- Read full graph relationships
+- Retrieve historical context
+- Cross-reference related decisions
+
+This rule enables intelligent memory retrieval without manual tool selection.
 - Read full graph relationships
 - Retrieve historical context
 - Cross-reference related decisions

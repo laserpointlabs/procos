@@ -1,0 +1,254 @@
+# Project Release Checklist - MANDATORY ENFORCEMENT
+
+## 🚨 CRITICAL: ALWAYS FOLLOW THIS CHECKLIST BEFORE ANY RELEASE
+
+### **PRE-RELEASE VERIFICATION (MANDATORY)**
+
+#### **1. Memory Backup (REQUIRED)**
+```bash
+# ALWAYS backup memory before any release
+./start.sh backup
+# Verify backup was created
+ls -la backups/mcp-memory/mcp-memory-backup-*.cypher.gz
+```
+
+#### **2. Git State Verification**
+```bash
+# Check current branch (MUST be on main/master)
+git branch --show-current
+
+# Check for uncommitted changes
+git status --porcelain
+
+# Check for untracked files
+git ls-files --others --exclude-standard
+
+# Verify clean working directory
+git diff --cached
+```
+
+#### **3. Branch Protection Verification**
+- [ ] **NEVER release from feature branches**
+- [ ] **NEVER release from development branches**
+- [ ] **ONLY release from main/master branch**
+- [ ] **Verify all feature branches are merged in correct order**
+
+#### **4. Infrastructure Health Check**
+```bash
+# Verify all services are running
+./start.sh status
+
+# Check Docker containers
+docker-compose ps
+
+# Verify main service is accessible
+curl -f http://localhost:8080/engine-rest/engine
+
+# Check database connection
+docker exec project-postgres pg_isready -U project
+```
+
+#### **5. Code Quality Verification**
+- [ ] All tests pass locally
+- [ ] No linting errors
+- [ ] No TypeScript compilation errors
+- [ ] All dependencies are up to date
+- [ ] No security vulnerabilities
+
+#### **6. Documentation Verification**
+- [ ] Architecture diagrams are current
+- [ ] API documentation is updated
+- [ ] README.md reflects current state
+- [ ] Release notes template is prepared
+
+### **RELEASE PROCESS (STEP-BY-STEP)**
+
+#### **Step 1: Determine Release Type**
+```bash
+# Check current version
+git describe --tags --abbrev=0
+
+# Determine release type:
+# - Alpha: Infrastructure fixes, prerelease (v2.0.1-alpha.1)
+# - Beta: Backend integration, testing (v2.0.1-beta.1)
+# - Patch: Bug fixes, production (v2.0.1)
+# - Minor: New features (v2.1.0)
+# - Major: Breaking changes (v3.0.0)
+```
+
+#### **Step 2: Create Release Branch**
+```bash
+# Create release branch with proper naming
+git checkout -b release/v1.0.0-alpha.1
+
+# Verify branch creation
+git branch --show-current
+```
+
+#### **Step 3: Final Testing**
+```bash
+# Test core functionality
+python -m src.core.main
+
+# Test worker functionality
+nohup python -m src.workers.main_worker </dev/null >worker.log 2>&1 &
+
+# Test process deployment
+python scripts/deploy_processes.py
+
+# Verify all tests pass
+./scripts/dev/container-diagnostic.sh
+```
+
+#### **Step 4: Commit and Push**
+```bash
+# Add all changes
+git add .
+
+# Commit with proper message format
+git commit -m "release: v1.0.0-alpha.1 - Infrastructure foundation with core components"
+
+# Push release branch
+git push origin release/v1.0.0-alpha.1
+```
+
+#### **Step 5: Create Git Tag**
+```bash
+# Create annotated tag
+git tag -a v1.0.0-alpha.1 -m "Project Alpha Release: Infrastructure Foundation"
+
+# Push tag to remote
+git push origin v1.0.0-alpha.1
+```
+
+#### **Step 6: Create GitHub Release**
+```bash
+# Create GitHub release with proper content
+gh release create v1.0.0-alpha.1 \
+  --title "Project Infrastructure Release v1.0.0-alpha.1" \
+  --notes-file RELEASE_NOTES.md \
+  --prerelease
+```
+
+#### **Step 7: Update Release Notes**
+- [ ] Update `RELEASE_NOTES.md` with:
+  - Release date
+  - Release type (Alpha/Beta/Patch/Minor/Major)
+  - Memory backup filename
+  - Issues resolved
+  - Fixes applied
+  - Testing completed
+  - Impact summary
+
+### **POST-RELEASE VERIFICATION**
+
+#### **1. Verify Release Success**
+```bash
+# Check GitHub release was created
+gh release list
+
+# Verify tag exists
+git tag --list | grep v1.0.0-alpha.1
+
+# Check release branch exists
+git branch -r | grep release/v1.0.0-alpha.1
+```
+
+#### **2. Clean Up**
+```bash
+# Delete local release branch
+git checkout main
+git branch -d release/v1.0.0-alpha.1
+
+# Delete remote release branch
+git push origin --delete release/v1.0.0-alpha.1
+```
+
+#### **3. Update Main Branch**
+```bash
+# Ensure main branch is up to date
+git checkout main
+git pull origin main
+
+# Verify clean state
+git status
+```
+
+### **EMERGENCY ROLLBACK PROCEDURE**
+
+#### **If Release Goes Wrong:**
+```bash
+# 1. Delete the problematic release
+gh release delete v1.0.0-alpha.1
+
+# 2. Delete the tag
+git tag -d v1.0.0-alpha.1
+git push origin --delete v1.0.0-alpha.1
+
+# 3. Reset to previous good state
+git reset --hard HEAD~1
+
+# 4. Force push to correct the history
+git push --force-with-lease origin main
+```
+
+### **COMMON MISTAKES TO AVOID**
+
+#### **❌ NEVER DO:**
+- Release from feature branches
+- Skip memory backup
+- Release without testing
+- Use wrong version numbers
+- Forget to update release notes
+- Release without proper git state
+- Skip infrastructure health checks
+- Release without code quality verification
+
+#### **✅ ALWAYS DO:**
+- Backup memory first
+- Test everything thoroughly
+- Follow the checklist step-by-step
+- Use proper version numbering
+- Update all documentation
+- Verify git state is clean
+- Check all services are running
+- Follow proper branch protection rules
+
+### **RELEASE TEMPLATE**
+
+#### **Release Notes Template:**
+```markdown
+# Project Release v1.0.0-alpha.1
+
+## 📅 Release Information
+- **Release Date**: [Current Date]
+- **Release Type**: Alpha Release (Infrastructure Foundation)
+- **Version**: v1.0.0-alpha.1
+- **Branch**: release/v1.0.0-alpha.1
+
+## 🧠 Memory Backup
+- **Backup File**: mcp-memory-backup-[timestamp].cypher.gz
+- **Backup Status**: ✅ Completed
+
+## 🔧 Issues Resolved
+- [List specific issues resolved]
+
+## 🛠️ Fixes Applied
+- [List technical changes made]
+
+## ✅ Testing Completed
+- [List verification steps completed]
+
+## 📊 Impact
+- [Summary of improvements and changes]
+```
+
+### **ENFORCEMENT**
+
+This checklist is **MANDATORY** and must be followed for every release. Any deviation from this checklist will result in release failures and potential code loss.
+
+**Remember**: It's better to take extra time to follow the checklist than to rush and break the release process!
+description:
+globs:
+alwaysApply: false
+---

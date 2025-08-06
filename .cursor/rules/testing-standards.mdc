@@ -1,10 +1,5 @@
----
-description: Comprehensive testing standards and CI/CD practices for DADMS including unit tests, integration tests, E2E tests, and deployment validation.
-globs: **/*.test.ts, **/*.test.tsx, **/*.spec.ts, **/*.spec.tsx, tests/**, cypress/**, jest.config.js, *.test.js, package.json
-alwaysApply: false
----
 
-# DADMS Testing & CI/CD Standards
+# Project Testing & CI/CD Standards
 
 ## When to Use This Rule
 
@@ -98,8 +93,7 @@ const mockProject = {
   name: 'Test Project',
   description: 'A test project description',
   status: 'active' as const,
-  createdAt: new Date('2023-01-01'),
-  updatedAt: new Date('2023-01-01')
+  createdAt: new Date('2023-01-01')
 };
 
 const renderWithTheme = (component: React.ReactElement) => {
@@ -111,58 +105,66 @@ const renderWithTheme = (component: React.ReactElement) => {
 };
 
 describe('ProjectCard', () => {
-  it('should render project information correctly', () => {
-    // Arrange & Act
+  it('renders project information correctly', () => {
     renderWithTheme(<ProjectCard project={mockProject} />);
-
-    // Assert
+    
     expect(screen.getByText('Test Project')).toBeInTheDocument();
     expect(screen.getByText('A test project description')).toBeInTheDocument();
-    expect(screen.getByText('active')).toBeInTheDocument();
+    expect(screen.getByText('Active')).toBeInTheDocument();
   });
 
-  it('should call onEdit when edit button is clicked', async () => {
-    // Arrange
+  it('calls onEdit when edit button is clicked', async () => {
     const mockOnEdit = jest.fn();
     renderWithTheme(
       <ProjectCard project={mockProject} onEdit={mockOnEdit} />
     );
+    
+    const editButton = screen.getByRole('button', { name: /edit/i });
+    fireEvent.click(editButton);
+    
+    expect(mockOnEdit).toHaveBeenCalledWith(mockProject);
+  });
 
-    // Act
-    fireEvent.click(screen.getByRole('button', { name: /edit project/i }));
-
-    // Assert
+  it('shows loading state during edit operation', async () => {
+    const mockOnEdit = jest.fn().mockImplementation(() => new Promise(resolve => setTimeout(resolve, 100)));
+    
+    renderWithTheme(
+      <ProjectCard project={mockProject} onEdit={mockOnEdit} />
+    );
+    
+    const editButton = screen.getByRole('button', { name: /edit/i });
+    fireEvent.click(editButton);
+    
+    expect(screen.getByText('Editing...')).toBeInTheDocument();
+    expect(editButton).toBeDisabled();
+    
     await waitFor(() => {
-      expect(mockOnEdit).toHaveBeenCalledWith(mockProject);
-      expect(mockOnEdit).toHaveBeenCalledTimes(1);
+      expect(screen.getByText('Edit')).toBeInTheDocument();
     });
   });
 
-  it('should not show edit button when onEdit is not provided', () => {
-    // Arrange & Act
-    renderWithTheme(<ProjectCard project={mockProject} />);
-
-    // Assert
-    expect(screen.queryByRole('button', { name: /edit project/i }))
-      .not.toBeInTheDocument();
-  });
-
-  it('should apply custom className', () => {
-    // Arrange & Act
+  it('handles error states gracefully', async () => {
+    const mockOnEdit = jest.fn().mockRejectedValue(new Error('Edit failed'));
+    
     renderWithTheme(
-      <ProjectCard project={mockProject} className="custom-class" />
+      <ProjectCard project={mockProject} onEdit={mockOnEdit} />
     );
-
-    // Assert
-    expect(screen.getByTestId('project-card'))
-      .toHaveClass('project-card', 'custom-class');
+    
+    const editButton = screen.getByRole('button', { name: /edit/i });
+    fireEvent.click(editButton);
+    
+    await waitFor(() => {
+      expect(screen.getByText('Edit')).toBeInTheDocument();
+    });
+    
+    expect(editButton).not.toBeDisabled();
   });
 });
 
-// ❌ BAD: Minimal testing
+// ❌ BAD: Poor component testing
 test('ProjectCard renders', () => {
   render(<ProjectCard project={mockProject} />);
-  expect(screen.getByText('Test Project')).toBeTruthy();
+  expect(screen.getByText('Test Project')).toBeInTheDocument();
 });
 ```
 
@@ -170,444 +172,229 @@ test('ProjectCard renders', () => {
 
 #### **API Endpoint Testing**
 ```typescript
-// ✅ GOOD: Complete API integration testing
+// ✅ GOOD: Comprehensive API testing
 import request from 'supertest';
 import { app } from '../src/app';
-import { setupTestDatabase, cleanupTestDatabase } from './helpers/database';
-import { createTestUser, createAuthToken } from './helpers/auth';
+import { setupTestDatabase, teardownTestDatabase } from './test-utils';
 
-describe('Projects API', () => {
-  let authToken: string;
-  let userId: string;
-
+describe('Project API', () => {
   beforeAll(async () => {
     await setupTestDatabase();
   });
 
   afterAll(async () => {
-    await cleanupTestDatabase();
+    await teardownTestDatabase();
   });
 
   beforeEach(async () => {
-    const user = await createTestUser();
-    userId = user.id;
-    authToken = createAuthToken(user);
+    // Clear test data between tests
+    await request(app).delete('/api/test/clear');
   });
 
   describe('POST /api/projects', () => {
-    it('should create a new project', async () => {
-      // Arrange
+    it('should create a new project successfully', async () => {
       const projectData = {
-        name: 'Integration Test Project',
-        description: 'Created via integration test'
+        name: 'New Test Project',
+        description: 'A new test project',
+        status: 'draft'
       };
 
-      // Act
       const response = await request(app)
         .post('/api/projects')
-        .set('Authorization', `Bearer ${authToken}`)
         .send(projectData)
         .expect(201);
 
-      // Assert
       expect(response.body).toMatchObject({
-        success: true,
-        data: {
-          id: expect.any(String),
-          name: projectData.name,
-          description: projectData.description,
-          userId: userId,
-          status: 'draft',
-          createdAt: expect.any(String),
-          updatedAt: expect.any(String)
-        }
+        id: expect.any(String),
+        name: projectData.name,
+        description: projectData.description,
+        status: projectData.status,
+        createdAt: expect.any(String)
       });
-
-      // Verify in database
-      const project = await db.projects.findById(response.body.data.id);
-      expect(project).toBeTruthy();
-      expect(project.name).toBe(projectData.name);
     });
 
-    it('should return 400 for invalid input', async () => {
-      // Arrange
-      const invalidData = { description: 'Missing name' };
+    it('should return 400 for invalid project data', async () => {
+      const invalidData = {
+        description: 'Missing name field'
+      };
 
-      // Act
       const response = await request(app)
         .post('/api/projects')
-        .set('Authorization', `Bearer ${authToken}`)
         .send(invalidData)
         .expect(400);
 
-      // Assert
       expect(response.body).toMatchObject({
-        error: 'Invalid input',
+        error: 'Validation failed',
         details: expect.arrayContaining([
-          expect.objectContaining({ path: ['name'] })
+          expect.objectContaining({
+            field: 'name',
+            message: expect.any(String)
+          })
         ])
       });
     });
 
-    it('should return 401 for unauthenticated requests', async () => {
-      // Arrange
-      const projectData = { name: 'Test Project' };
+    it('should return 409 for duplicate project name', async () => {
+      const projectData = {
+        name: 'Duplicate Project',
+        description: 'First project'
+      };
 
-      // Act & Assert
+      // Create first project
       await request(app)
         .post('/api/projects')
         .send(projectData)
-        .expect(401);
+        .expect(201);
+
+      // Try to create duplicate
+      const response = await request(app)
+        .post('/api/projects')
+        .send(projectData)
+        .expect(409);
+
+      expect(response.body).toMatchObject({
+        error: 'Project with this name already exists'
+      });
     });
   });
 
   describe('GET /api/projects', () => {
-    it('should return user projects with pagination', async () => {
-      // Arrange - Create test projects
-      const projects = await Promise.all([
-        createTestProject(userId, 'Project 1'),
-        createTestProject(userId, 'Project 2'),
-        createTestProject(userId, 'Project 3')
-      ]);
+    it('should return paginated projects', async () => {
+      // Create test projects
+      const projects = [
+        { name: 'Project 1', description: 'First project' },
+        { name: 'Project 2', description: 'Second project' },
+        { name: 'Project 3', description: 'Third project' }
+      ];
 
-      // Act
+      for (const project of projects) {
+        await request(app)
+          .post('/api/projects')
+          .send(project);
+      }
+
       const response = await request(app)
-        .get('/api/projects?limit=2&offset=0')
-        .set('Authorization', `Bearer ${authToken}`)
+        .get('/api/projects?limit=2&page=1')
         .expect(200);
 
-      // Assert
       expect(response.body).toMatchObject({
-        success: true,
-        data: expect.arrayContaining([
-          expect.objectContaining({ name: 'Project 3' }),
-          expect.objectContaining({ name: 'Project 2' })
+        projects: expect.arrayContaining([
+          expect.objectContaining({
+            name: expect.any(String),
+            description: expect.any(String)
+          })
         ]),
         pagination: {
-          total: 3,
+          page: 1,
           limit: 2,
-          offset: 0,
-          hasMore: true
+          total: 3,
+          totalPages: 2
         }
       });
-    });
-  });
-});
 
-// ❌ BAD: Shallow integration testing
-describe('API tests', () => {
-  test('POST /projects works', async () => {
-    const response = await request(app).post('/projects').send({});
-    expect(response.status).not.toBe(500);
-  });
-});
-```
-
-#### **Database Integration Testing**
-```typescript
-// ✅ GOOD: Database integration testing
-import { DatabaseService } from '../src/services/DatabaseService';
-import { setupTestDatabase, cleanupTestDatabase } from './helpers/database';
-
-describe('DatabaseService Integration', () => {
-  let dbService: DatabaseService;
-
-  beforeAll(async () => {
-    await setupTestDatabase();
-    dbService = new DatabaseService();
-  });
-
-  afterAll(async () => {
-    await cleanupTestDatabase();
-  });
-
-  describe('Transaction handling', () => {
-    it('should rollback transaction on error', async () => {
-      // Arrange
-      const userId = await createTestUser();
-      const initialProjectCount = await dbService.projects.count(userId);
-
-      // Act - Simulate error during transaction
-      await expect(
-        dbService.withTransaction(async (tx) => {
-          await tx.projects.create({ name: 'Test Project', userId });
-          throw new Error('Simulated error');
-        })
-      ).rejects.toThrow('Simulated error');
-
-      // Assert - Project should not be created
-      const finalProjectCount = await dbService.projects.count(userId);
-      expect(finalProjectCount).toBe(initialProjectCount);
+      expect(response.body.projects).toHaveLength(2);
     });
 
-    it('should commit successful transactions', async () => {
-      // Arrange
-      const userId = await createTestUser();
-      const initialProjectCount = await dbService.projects.count(userId);
+    it('should filter projects by status', async () => {
+      // Create projects with different statuses
+      await request(app)
+        .post('/api/projects')
+        .send({ name: 'Active Project', status: 'active' });
 
-      // Act
-      const result = await dbService.withTransaction(async (tx) => {
-        const project = await tx.projects.create({ 
-          name: 'Test Project', 
-          userId 
-        });
-        const task = await tx.tasks.create({ 
-          name: 'Test Task', 
-          projectId: project.id 
-        });
-        return { project, task };
-      });
+      await request(app)
+        .post('/api/projects')
+        .send({ name: 'Draft Project', status: 'draft' });
 
-      // Assert
-      const finalProjectCount = await dbService.projects.count(userId);
-      expect(finalProjectCount).toBe(initialProjectCount + 1);
-      
-      const createdProject = await dbService.projects.findById(result.project.id);
-      expect(createdProject).toBeTruthy();
-      
-      const createdTask = await dbService.tasks.findById(result.task.id);
-      expect(createdTask).toBeTruthy();
+      const response = await request(app)
+        .get('/api/projects?status=active')
+        .expect(200);
+
+      expect(response.body.projects).toHaveLength(1);
+      expect(response.body.projects[0].name).toBe('Active Project');
     });
   });
 });
 ```
 
-### **End-to-End Tests (10% of test coverage)**
+### **E2E Tests (10% of test coverage)**
 
-#### **Cypress E2E Testing**
+#### **Critical User Journey Testing**
 ```typescript
-// ✅ GOOD: Comprehensive E2E testing
-describe('Project Management Workflow', () => {
+// ✅ GOOD: E2E testing with Cypress
+describe('Project Management E2E', () => {
   beforeEach(() => {
-    // Setup test data
-    cy.task('db:seed');
-    cy.login('test@example.com', 'password123');
+    cy.visit('/');
+    cy.login('testuser@example.com', 'password123');
   });
 
-  afterEach(() => {
-    cy.task('db:clean');
-  });
-
-  it('should complete full project creation workflow', () => {
+  it('should allow user to create and manage projects', () => {
     // Navigate to projects page
     cy.visit('/projects');
-    cy.get('[data-testid="projects-page"]').should('be.visible');
-
-    // Start project creation
+    
+    // Create new project
     cy.get('[data-testid="create-project-btn"]').click();
-    cy.get('[data-testid="project-form"]').should('be.visible');
-
-    // Fill project form
-    cy.get('[data-testid="project-name-input"]')
-      .type('E2E Test Project');
-    cy.get('[data-testid="project-description-input"]')
-      .type('Created through E2E testing');
-    cy.get('[data-testid="project-category-select"]')
-      .select('Development');
-
-    // Submit form
-    cy.get('[data-testid="submit-project-btn"]').click();
-
-    // Verify success
-    cy.get('[data-testid="success-notification"]')
-      .should('contain', 'Project created successfully');
-    cy.url().should('match', /\/projects\/[a-zA-Z0-9-]+$/);
-
-    // Verify project appears in list
-    cy.visit('/projects');
-    cy.get('[data-testid="project-list"]')
-      .should('contain', 'E2E Test Project');
-
-    // Test project editing
-    cy.get('[data-testid="project-card-E2E Test Project"]')
-      .find('[data-testid="edit-project-btn"]')
-      .click();
-
-    cy.get('[data-testid="project-name-input"]')
-      .clear()
-      .type('Updated E2E Project');
-    cy.get('[data-testid="submit-project-btn"]').click();
-
-    // Verify update
-    cy.get('[data-testid="success-notification"]')
-      .should('contain', 'Project updated successfully');
-    cy.get('[data-testid="project-list"]')
-      .should('contain', 'Updated E2E Project')
-      .should('not.contain', 'E2E Test Project');
-  });
-
-  it('should handle project deletion correctly', () => {
-    // Create project first
-    cy.createProject('Project to Delete');
-
-    // Navigate to projects and find the project
-    cy.visit('/projects');
-    cy.get('[data-testid="project-card-Project to Delete"]')
-      .should('be.visible');
-
-    // Delete project
-    cy.get('[data-testid="project-card-Project to Delete"]')
-      .find('[data-testid="delete-project-btn"]')
-      .click();
-
-    // Confirm deletion
-    cy.get('[data-testid="confirm-dialog"]').should('be.visible');
-    cy.get('[data-testid="confirm-delete-btn"]').click();
-
-    // Verify deletion
-    cy.get('[data-testid="success-notification"]')
-      .should('contain', 'Project deleted successfully');
-    cy.get('[data-testid="project-list"]')
-      .should('not.contain', 'Project to Delete');
-  });
-
-  it('should maintain data consistency across page refreshes', () => {
-    // Create project
-    cy.createProject('Persistence Test Project');
-
-    // Refresh page
-    cy.reload();
-
-    // Verify project still exists
-    cy.get('[data-testid="project-list"]')
-      .should('contain', 'Persistence Test Project');
-
+    cy.get('[data-testid="project-name-input"]').type('My New Project');
+    cy.get('[data-testid="project-description-input"]').type('A test project for E2E testing');
+    cy.get('[data-testid="project-status-select"]').select('draft');
+    cy.get('[data-testid="save-project-btn"]').click();
+    
+    // Verify project was created
+    cy.url().should('include', '/projects/');
+    cy.get('[data-testid="project-name"]').should('contain', 'My New Project');
+    cy.get('[data-testid="project-status"]').should('contain', 'Draft');
+    
     // Edit project
-    cy.get('[data-testid="project-card-Persistence Test Project"]')
-      .find('[data-testid="edit-project-btn"]')
-      .click();
+    cy.get('[data-testid="edit-project-btn"]').click();
+    cy.get('[data-testid="project-name-input"]').clear().type('Updated Project Name');
+    cy.get('[data-testid="save-project-btn"]').click();
     
-    cy.get('[data-testid="project-description-input"]')
-      .clear()
-      .type('Updated after refresh');
-    cy.get('[data-testid="submit-project-btn"]').click();
+    // Verify changes were saved
+    cy.get('[data-testid="project-name"]').should('contain', 'Updated Project Name');
+    
+    // Delete project
+    cy.get('[data-testid="delete-project-btn"]').click();
+    cy.get('[data-testid="confirm-delete-btn"]').click();
+    
+    // Verify project was deleted
+    cy.url().should('eq', Cypress.config().baseUrl + '/projects');
+    cy.get('[data-testid="project-list"]').should('not.contain', 'Updated Project Name');
+  });
 
-    // Refresh again
-    cy.reload();
+  it('should handle validation errors gracefully', () => {
+    cy.visit('/projects');
+    cy.get('[data-testid="create-project-btn"]').click();
+    
+    // Try to save without required fields
+    cy.get('[data-testid="save-project-btn"]').click();
+    
+    // Verify validation messages
+    cy.get('[data-testid="name-error"]').should('contain', 'Name is required');
+    
+    // Fill in required field and save
+    cy.get('[data-testid="project-name-input"]').type('Valid Project');
+    cy.get('[data-testid="save-project-btn"]').click();
+    
+    // Verify success
+    cy.url().should('include', '/projects/');
+  });
 
-    // Verify changes persisted
-    cy.get('[data-testid="project-card-Persistence Test Project"]')
-      .should('contain', 'Updated after refresh');
+  it('should handle network errors gracefully', () => {
+    // Intercept API calls to simulate network errors
+    cy.intercept('POST', '/api/projects', { statusCode: 500 }).as('createProjectError');
+    
+    cy.visit('/projects');
+    cy.get('[data-testid="create-project-btn"]').click();
+    cy.get('[data-testid="project-name-input"]').type('Network Test Project');
+    cy.get('[data-testid="save-project-btn"]').click();
+    
+    // Wait for the intercepted request
+    cy.wait('@createProjectError');
+    
+    // Verify error handling
+    cy.get('[data-testid="error-message"]').should('contain', 'Failed to create project');
+    cy.get('[data-testid="retry-btn"]').should('be.visible');
   });
 });
-
-// ❌ BAD: Shallow E2E testing
-it('can create project', () => {
-  cy.visit('/projects');
-  cy.get('button').click();
-  cy.get('input').type('Test');
-  cy.get('form').submit();
-});
-```
-
-## Testing Infrastructure
-
-### **Test Database Setup**
-```typescript
-// ✅ GOOD: Proper test database isolation
-import { Pool } from 'pg';
-import { migrate } from '../src/database/migrate';
-
-let testDb: Pool;
-
-export async function setupTestDatabase(): Promise<void> {
-  const testDbName = `dadms_test_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-  
-  // Create test database
-  const adminDb = new Pool({
-    connectionString: process.env.TEST_DATABASE_URL,
-    database: 'postgres'
-  });
-  
-  await adminDb.query(`CREATE DATABASE "${testDbName}"`);
-  await adminDb.end();
-  
-  // Connect to test database
-  testDb = new Pool({
-    connectionString: process.env.TEST_DATABASE_URL,
-    database: testDbName
-  });
-  
-  // Run migrations
-  await migrate(testDb);
-  
-  // Set global test database
-  global.__TEST_DB__ = testDb;
-  global.__TEST_DB_NAME__ = testDbName;
-}
-
-export async function cleanupTestDatabase(): Promise<void> {
-  if (testDb) {
-    await testDb.end();
-  }
-  
-  if (global.__TEST_DB_NAME__) {
-    const adminDb = new Pool({
-      connectionString: process.env.TEST_DATABASE_URL,
-      database: 'postgres'
-    });
-    
-    await adminDb.query(`DROP DATABASE "${global.__TEST_DB_NAME__}"`);
-    await adminDb.end();
-  }
-}
-```
-
-### **Mock Services**
-```typescript
-// ✅ GOOD: Comprehensive service mocking
-export class MockEmailService {
-  public sentEmails: Array<{
-    to: string;
-    subject: string;
-    body: string;
-    sentAt: Date;
-  }> = [];
-
-  async sendEmail(to: string, subject: string, body: string): Promise<void> {
-    this.sentEmails.push({
-      to,
-      subject,
-      body,
-      sentAt: new Date()
-    });
-  }
-
-  getLastEmailTo(email: string) {
-    return this.sentEmails
-      .filter(e => e.to === email)
-      .sort((a, b) => b.sentAt.getTime() - a.sentAt.getTime())[0];
-  }
-
-  reset(): void {
-    this.sentEmails = [];
-  }
-}
-
-export class MockFileService {
-  private files = new Map<string, Buffer>();
-
-  async uploadFile(key: string, content: Buffer): Promise<string> {
-    this.files.set(key, content);
-    return `https://test-storage.com/${key}`;
-  }
-
-  async downloadFile(key: string): Promise<Buffer> {
-    const file = this.files.get(key);
-    if (!file) {
-      throw new Error(`File not found: ${key}`);
-    }
-    return file;
-  }
-
-  async deleteFile(key: string): Promise<void> {
-    this.files.delete(key);
-  }
-
-  reset(): void {
-    this.files.clear();
-  }
-}
 ```
 
 ## CI/CD Pipeline Standards
@@ -615,100 +402,24 @@ export class MockFileService {
 ### **GitHub Actions Workflow**
 ```yaml
 # ✅ GOOD: Comprehensive CI/CD pipeline
-name: DADMS CI/CD Pipeline
+name: CI/CD Pipeline
 
 on:
   push:
     branches: [ main, develop ]
   pull_request:
-    branches: [ main, develop ]
-
-env:
-  NODE_VERSION: '18'
-  POSTGRES_VERSION: '14'
+    branches: [ main ]
 
 jobs:
-  lint-and-type-check:
+  test:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          
-      - name: Install dependencies
-        run: npm ci
-        
-      - name: Run ESLint
-        run: npm run lint
-        
-      - name: Run TypeScript type checking
-        run: npm run type-check
-        
-      - name: Run Prettier check
-        run: npm run format:check
-
-  unit-tests:
-    runs-on: ubuntu-latest
+    
     services:
       postgres:
-        image: postgres:14
+        image: postgres:15
         env:
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: dadms_test
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-          
-      redis:
-        image: redis:7
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 6379:6379
-
-    steps:
-      - uses: actions/checkout@v3
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          
-      - name: Install dependencies
-        run: npm ci
-        
-      - name: Run unit tests
-        run: npm run test:unit
-        env:
-          TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/dadms_test
-          REDIS_URL: redis://localhost:6379
-          
-      - name: Upload coverage reports
-        uses: codecov/codecov-action@v3
-        with:
-          file: ./coverage/lcov.info
-
-  integration-tests:
-    runs-on: ubuntu-latest
-    needs: [lint-and-type-check, unit-tests]
-    services:
-      postgres:
-        image: postgres:14
-        env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: dadms_test
+          POSTGRES_DB: test_db
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -718,100 +429,178 @@ jobs:
           - 5432:5432
 
     steps:
-      - uses: actions/checkout@v3
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          
-      - name: Install dependencies
-        run: npm ci
-        
-      - name: Run database migrations
-        run: npm run migrate:test
-        env:
-          TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/dadms_test
-          
-      - name: Run integration tests
-        run: npm run test:integration
-        env:
-          TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/dadms_test
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Run linting
+      run: npm run lint
+    
+    - name: Run type checking
+      run: npm run type-check
+    
+    - name: Run unit tests
+      run: npm run test:unit -- --coverage --watchAll=false
+    
+    - name: Run integration tests
+      run: npm run test:integration -- --watchAll=false
+      env:
+        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+    
+    - name: Upload coverage reports
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage/lcov.info
+        flags: unittests
+        name: codecov-umbrella
 
-  e2e-tests:
+  e2e:
     runs-on: ubuntu-latest
-    needs: [integration-tests]
+    needs: test
+    
     steps:
-      - uses: actions/checkout@v3
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          
-      - name: Install dependencies
-        run: npm ci
-        
-      - name: Start DADMS services
-        run: |
-          docker-compose -f dadms-infrastructure/docker-compose.yml up -d
-          npm run start:test &
-          npx wait-on http://localhost:3000
-        env:
-          NODE_ENV: test
-          
-      - name: Run E2E tests
-        run: npm run test:e2e
-        
-      - name: Upload E2E artifacts
-        uses: actions/upload-artifact@v3
-        if: failure()
-        with:
-          name: cypress-screenshots
-          path: cypress/screenshots
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Start application
+      run: npm run start:test &
+      env:
+        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+    
+    - name: Wait for application
+      run: npx wait-on http://localhost:3000
+    
+    - name: Run E2E tests
+      run: npm run test:e2e
+      env:
+        CYPRESS_baseUrl: http://localhost:3000
 
-  security-scan:
+  security:
     runs-on: ubuntu-latest
+    needs: test
+    
     steps:
-      - uses: actions/checkout@v3
-      
-      - name: Run npm audit
-        run: npm audit --audit-level high
-        
-      - name: Run CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
-        with:
-          languages: javascript
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Run security audit
+      run: npm audit --audit-level=high
+    
+    - name: Run SAST scan
+      uses: github/codeql-action/init@v2
+      with:
+        languages: javascript
+    
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v2
 
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
-    needs: [unit-tests, integration-tests, e2e-tests, security-scan]
+    needs: [test, e2e, security]
     if: github.ref == 'refs/heads/main'
+    
     steps:
-      - uses: actions/checkout@v3
-      
-      - name: Build Docker images
-        run: |
-          docker build -t dadms-ui ./dadms-ui
-          docker build -t dadms-backend ./dadms-services
-          
-      - name: Run smoke tests
-        run: |
-          docker-compose -f dadms-infrastructure/docker-compose.yml up -d
-          npm run test:smoke
+    - uses: actions/checkout@v4
+    
+    - name: Setup Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+    
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: |
+          project/app:latest
+          project/app:${{ github.sha }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    
+    steps:
+    - name: Deploy to production
+      run: |
+        echo "Deploying to production..."
+        # Add deployment steps here
 ```
 
-### **Test Coverage Requirements**
+### **Package.json Scripts**
 ```json
+{
+  "scripts": {
+    "test": "jest",
+    "test:unit": "jest --testPathPattern=unit",
+    "test:integration": "jest --testPathPattern=integration",
+    "test:e2e": "cypress run",
+    "test:coverage": "jest --coverage",
+    "test:watch": "jest --watch",
+    "test:ci": "jest --ci --coverage --watchAll=false",
+    "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
+    "lint:fix": "eslint . --ext .ts,.tsx,.js,.jsx --fix",
+    "type-check": "tsc --noEmit",
+    "build": "tsc && vite build",
+    "start": "node dist/server.js",
+    "start:dev": "vite dev",
+    "start:test": "NODE_ENV=test node dist/server.js",
+    "docker:build": "docker build -t project/app .",
+    "docker:run": "docker run -p 3000:3000 project/app",
+    "docker:test": "docker run --rm project/app npm test"
+  }
+}
+```
+
+## Test Configuration Standards
+
+### **Jest Configuration**
+```javascript
 // jest.config.js
 module.exports = {
+  preset: 'ts-jest',
+  testEnvironment: 'node',
+  roots: ['<rootDir>/src', '<rootDir>/tests'],
+  testMatch: [
+    '**/__tests__/**/*.ts',
+    '**/?(*.)+(spec|test).ts'
+  ],
   collectCoverageFrom: [
-    'src/**/*.{ts,tsx}',
+    'src/**/*.ts',
     '!src/**/*.d.ts',
-    '!src/**/*.stories.{ts,tsx}',
-    '!src/types/**/*'
+    '!src/**/*.test.ts',
+    '!src/**/*.spec.ts'
   ],
   coverageThreshold: {
     global: {
@@ -819,52 +608,118 @@ module.exports = {
       functions: 80,
       lines: 80,
       statements: 80
-    },
-    './src/services/': {
-      branches: 90,
-      functions: 90,
-      lines: 90,
-      statements: 90
     }
   },
-  testMatch: [
-    '<rootDir>/src/**/__tests__/**/*.{ts,tsx}',
-    '<rootDir>/src/**/*.{test,spec}.{ts,tsx}'
-  ]
+  setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
+  testTimeout: 10000,
+  verbose: true,
+  clearMocks: true,
+  restoreMocks: true
 };
+```
+
+### **Cypress Configuration**
+```javascript
+// cypress.config.js
+const { defineConfig } = require('cypress');
+
+module.exports = defineConfig({
+  e2e: {
+    baseUrl: 'http://localhost:3000',
+    supportFile: 'cypress/support/e2e.ts',
+    specPattern: 'cypress/e2e/**/*.cy.ts',
+    video: false,
+    screenshotOnRunFailure: true,
+    defaultCommandTimeout: 10000,
+    requestTimeout: 10000,
+    responseTimeout: 10000,
+    viewportWidth: 1280,
+    viewportHeight: 720,
+    setupNodeEvents(on, config) {
+      // implement node event listeners here
+    },
+  },
+  component: {
+    devServer: {
+      framework: 'react',
+      bundler: 'vite',
+    },
+  },
+});
 ```
 
 ## Quality Gates
 
 ### **Pre-commit Hooks**
 ```json
-// package.json
 {
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged",
-      "pre-push": "npm run test:unit"
+      "pre-push": "npm run test:ci"
     }
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
       "eslint --fix",
       "prettier --write",
-      "git add"
+      "jest --bail --findRelatedTests"
     ],
     "*.{json,md,yml,yaml}": [
-      "prettier --write",
-      "git add"
+      "prettier --write"
     ]
   }
 }
 ```
 
-### **Test Execution Strategy**
-- **Unit tests**: Run on every commit
-- **Integration tests**: Run on pull requests and merges
-- **E2E tests**: Run on main branch and release candidates
-- **Performance tests**: Run nightly and before releases
+### **Code Coverage Requirements**
+- **Unit Tests**: Minimum 80% coverage
+- **Integration Tests**: Minimum 70% coverage
+- **E2E Tests**: Critical user journeys covered
+- **Security Tests**: All authentication/authorization flows tested
+
+### **Performance Testing**
+```typescript
+// ✅ GOOD: Performance testing
+import { performance } from 'perf_hooks';
+
+describe('Performance Tests', () => {
+  it('should load project list within 2 seconds', async () => {
+    const start = performance.now();
+    
+    const response = await request(app)
+      .get('/api/projects')
+      .expect(200);
+    
+    const end = performance.now();
+    const duration = end - start;
+    
+    expect(duration).toBeLessThan(2000); // 2 seconds
+    expect(response.body.projects).toBeDefined();
+  });
+
+  it('should handle concurrent requests efficiently', async () => {
+    const concurrentRequests = 10;
+    const promises = Array.from({ length: concurrentRequests }, () =>
+      request(app).get('/api/projects')
+    );
+    
+    const start = performance.now();
+    const responses = await Promise.all(promises);
+    const end = performance.now();
+    const duration = end - start;
+    
+    expect(duration).toBeLessThan(5000); // 5 seconds for 10 concurrent requests
+    responses.forEach(response => {
+      expect(response.status).toBe(200);
+    });
+  });
+});
+```
+
+---
+
+**These testing standards ensure comprehensive, reliable, and maintainable test coverage across the entire project.**
 - **Security scans**: Run on every pull request
 
 ---

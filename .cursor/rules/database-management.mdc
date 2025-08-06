@@ -1,0 +1,596 @@
+# PostgreSQL Database Management Standards
+
+## When to Use This Rule
+
+This rule applies when working with:
+- **Database schema files** (`.sql`, `init-db.sql`)
+- **Migration scripts** (`migrations/*.sql`)
+- **Docker configurations** (`docker-compose.yml`)
+- **Environment files** (`.env`)
+- **Database-related scripts** (`scripts/db-*.sh`)
+
+## Database Schema Management
+
+### **Schema Organization Standards**
+
+#### **File Structure**
+```
+project/
+├── scripts/
+│   ├── init-db.sql              # Main initialization script
+│   ├── migrations/              # Database migrations
+│   │   ├── 001_initial_schema.sql
+│   │   ├── 002_add_users_table.sql
+│   │   └── 003_add_indexes.sql
+│   ├── db-backup.sh            # Backup utilities
+│   ├── db-restore.sh           # Restore utilities
+│   └── db-migrate.sh           # Migration runner
+├── docs/
+│   └── database/
+│       ├── schema.md            # Schema documentation
+│       ├── migrations.md        # Migration history
+│       └── backup-procedures.md # Backup documentation
+└── docker-compose.yml          # Database service configuration
+```
+
+#### **Schema Documentation Template**
+```sql
+-- =============================================================================
+-- Project Database Schema
+-- =============================================================================
+-- Version: 1.0.0
+-- Last Updated: [Date]
+-- Description: Main database schema for project
+-- 
+-- Tables:
+-- - users: User management and authentication
+-- - projects: Project data and metadata
+-- - tasks: Task management and workflow
+-- - ai_context: AI conversation and context storage
+-- - system_logs: Application and system logging
+-- =============================================================================
+
+-- Enable required extensions
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "pg_trgm";
+
+-- Create custom types
+CREATE TYPE user_status AS ENUM ('active', 'inactive', 'suspended');
+CREATE TYPE project_status AS ENUM ('draft', 'active', 'completed', 'archived');
+CREATE TYPE task_priority AS ENUM ('low', 'medium', 'high', 'critical');
+
+-- =============================================================================
+-- USERS TABLE
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS users (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    email VARCHAR(255) UNIQUE NOT NULL,
+    username VARCHAR(100) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    full_name VARCHAR(255),
+    status user_status DEFAULT 'active',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    last_login TIMESTAMP WITH TIME ZONE,
+    preferences JSONB DEFAULT '{}',
+    
+    -- Constraints
+    CONSTRAINT email_format CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
+    CONSTRAINT username_format CHECK (username ~* '^[a-zA-Z0-9_-]{3,50}$')
+);
+
+-- =============================================================================
+-- PROJECTS TABLE
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS projects (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    status project_status DEFAULT 'draft',
+    owner_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    metadata JSONB DEFAULT '{}',
+    
+    -- Constraints
+    CONSTRAINT project_name_length CHECK (LENGTH(name) >= 1 AND LENGTH(name) <= 255)
+);
+
+-- =============================================================================
+-- TASKS TABLE
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS tasks (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    priority task_priority DEFAULT 'medium',
+    status VARCHAR(50) DEFAULT 'pending',
+    project_id UUID REFERENCES projects(id) ON DELETE CASCADE,
+    assigned_to UUID REFERENCES users(id) ON DELETE SET NULL,
+    created_by UUID NOT NULL REFERENCES users(id),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    due_date TIMESTAMP WITH TIME ZONE,
+    completed_at TIMESTAMP WITH TIME ZONE,
+    
+    -- Constraints
+    CONSTRAINT task_title_length CHECK (LENGTH(title) >= 1 AND LENGTH(title) <= 255)
+);
+
+-- =============================================================================
+-- AI CONTEXT TABLE (for large AI context storage)
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS ai_context (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    session_id VARCHAR(255) NOT NULL,
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    context_type VARCHAR(50) NOT NULL, -- 'conversation', 'analysis', 'generation'
+    input_context TEXT, -- Large text input (not truncated)
+    output_context TEXT, -- Large text output (not truncated)
+    metadata JSONB DEFAULT '{}',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    
+    -- Indexes for performance
+    CONSTRAINT ai_context_session_user UNIQUE (session_id, user_id)
+);
+
+-- =============================================================================
+-- SYSTEM LOGS TABLE
+-- =============================================================================
+CREATE TABLE IF NOT EXISTS system_logs (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    level VARCHAR(20) NOT NULL, -- 'debug', 'info', 'warn', 'error'
+    message TEXT NOT NULL,
+    service VARCHAR(100),
+    user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+    metadata JSONB DEFAULT '{}',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- =============================================================================
+-- INDEXES FOR PERFORMANCE
+-- =============================================================================
+
+-- Users table indexes
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
+CREATE INDEX IF NOT EXISTS idx_users_status ON users(status);
+
+-- Projects table indexes
+CREATE INDEX IF NOT EXISTS idx_projects_owner ON projects(owner_id);
+CREATE INDEX IF NOT EXISTS idx_projects_status ON projects(status);
+CREATE INDEX IF NOT EXISTS idx_projects_created_at ON projects(created_at);
+
+-- Tasks table indexes
+CREATE INDEX IF NOT EXISTS idx_tasks_project ON tasks(project_id);
+CREATE INDEX IF NOT EXISTS idx_tasks_assigned ON tasks(assigned_to);
+CREATE INDEX IF NOT EXISTS idx_tasks_status ON tasks(status);
+CREATE INDEX IF NOT EXISTS idx_tasks_priority ON tasks(priority);
+CREATE INDEX IF NOT EXISTS idx_tasks_due_date ON tasks(due_date);
+
+-- AI Context table indexes
+CREATE INDEX IF NOT EXISTS idx_ai_context_session ON ai_context(session_id);
+CREATE INDEX IF NOT EXISTS idx_ai_context_user ON ai_context(user_id);
+CREATE INDEX IF NOT EXISTS idx_ai_context_type ON ai_context(context_type);
+CREATE INDEX IF NOT EXISTS idx_ai_context_created_at ON ai_context(created_at);
+
+-- System logs table indexes
+CREATE INDEX IF NOT EXISTS idx_system_logs_level ON system_logs(level);
+CREATE INDEX IF NOT EXISTS idx_system_logs_service ON system_logs(service);
+CREATE INDEX IF NOT EXISTS idx_system_logs_created_at ON system_logs(created_at);
+CREATE INDEX IF NOT EXISTS idx_system_logs_user ON system_logs(user_id);
+
+-- =============================================================================
+-- TRIGGERS FOR AUTOMATIC UPDATES
+-- =============================================================================
+
+-- Function to update updated_at timestamp
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+-- Apply triggers to all tables with updated_at
+CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_projects_updated_at BEFORE UPDATE ON projects
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_tasks_updated_at BEFORE UPDATE ON tasks
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_ai_context_updated_at BEFORE UPDATE ON ai_context
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- =============================================================================
+-- INITIAL DATA (if needed)
+-- =============================================================================
+
+-- Insert default admin user (if required)
+-- INSERT INTO users (email, username, password_hash, full_name, status)
+-- VALUES ('admin@project.com', 'admin', 'hashed_password_here', 'System Administrator', 'active');
+
+-- =============================================================================
+-- GRANTS AND PERMISSIONS
+-- =============================================================================
+
+-- Grant appropriate permissions to application user
+-- GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO project_user;
+-- GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO project_user;
+```
+
+### **Migration Management**
+
+#### **Migration File Naming Convention**
+```sql
+-- Format: YYYYMMDD_HHMMSS_description.sql
+-- Example: 20240118_143022_add_user_preferences.sql
+
+-- Migration: Add user preferences column
+-- Date: 2024-01-18
+-- Author: [Your Name]
+-- Description: Adds preferences JSONB column to users table
+
+BEGIN;
+
+-- Add the new column
+ALTER TABLE users ADD COLUMN IF NOT EXISTS preferences JSONB DEFAULT '{}';
+
+-- Add index for performance
+CREATE INDEX IF NOT EXISTS idx_users_preferences ON users USING GIN (preferences);
+
+-- Update existing records if needed
+UPDATE users SET preferences = '{}' WHERE preferences IS NULL;
+
+COMMIT;
+```
+
+#### **Migration Script Template**
+```bash
+#!/bin/bash
+# scripts/db-migrate.sh
+
+set -e
+
+DB_HOST="${DB_HOST:-localhost}"
+DB_PORT="${DB_PORT:-5432}"
+DB_NAME="${DB_NAME:-project}"
+DB_USER="${DB_USER:-project}"
+DB_PASSWORD="${DB_PASSWORD:-project123}"
+
+MIGRATIONS_DIR="scripts/migrations"
+MIGRATION_TABLE="schema_migrations"
+
+echo "Starting database migration..."
+
+# Create migrations table if it doesn't exist
+psql "postgresql://$DB_USER:$DB_PASSWORD@$DB_HOST:$DB_PORT/$DB_NAME" <<-EOSQL
+    CREATE TABLE IF NOT EXISTS $MIGRATION_TABLE (
+        id SERIAL PRIMARY KEY,
+        version VARCHAR(255) UNIQUE NOT NULL,
+        applied_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    );
+EOSQL
+
+# Apply migrations
+for migration in $(ls $MIGRATIONS_DIR/*.sql | sort); do
+    version=$(basename $migration .sql)
+    
+    # Check if migration already applied
+    applied=$(psql "postgresql://$DB_USER:$DB_PASSWORD@$DB_HOST:$DB_PORT/$DB_NAME" -t -c "SELECT COUNT(*) FROM $MIGRATION_TABLE WHERE version = '$version'")
+    
+    if [ "$applied" -eq 0 ]; then
+        echo "Applying migration: $version"
+        psql "postgresql://$DB_USER:$DB_PASSWORD@$DB_HOST:$DB_PORT/$DB_NAME" -f "$migration"
+        
+        # Record migration
+        psql "postgresql://$DB_USER:$DB_PASSWORD@$DB_HOST:$DB_PORT/$DB_NAME" -c "INSERT INTO $MIGRATION_TABLE (version) VALUES ('$version')"
+        
+        echo "Migration $version applied successfully"
+    else
+        echo "Migration $version already applied, skipping"
+    fi
+done
+
+echo "Database migration completed"
+```
+
+### **Backup and Restore Procedures**
+
+#### **Backup Script**
+```bash
+#!/bin/bash
+# scripts/db-backup.sh
+
+set -e
+
+DB_HOST="${DB_HOST:-localhost}"
+DB_PORT="${DB_PORT:-5432}"
+DB_NAME="${DB_NAME:-project}"
+DB_USER="${DB_USER:-project}"
+DB_PASSWORD="${DB_PASSWORD:-project123}"
+
+BACKUP_DIR="backups/database"
+TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+BACKUP_FILE="$BACKUP_DIR/project_db_backup_$TIMESTAMP.sql"
+
+# Create backup directory
+mkdir -p "$BACKUP_DIR"
+
+echo "Creating database backup..."
+
+# Create backup
+PGPASSWORD="$DB_PASSWORD" pg_dump \
+    -h "$DB_HOST" \
+    -p "$DB_PORT" \
+    -U "$DB_USER" \
+    -d "$DB_NAME" \
+    --verbose \
+    --clean \
+    --if-exists \
+    --no-owner \
+    --no-privileges \
+    --file "$BACKUP_FILE"
+
+# Compress backup
+gzip "$BACKUP_FILE"
+
+echo "Backup created: ${BACKUP_FILE}.gz"
+
+# Clean up old backups (keep last 7 days)
+find "$BACKUP_DIR" -name "*.sql.gz" -mtime +7 -delete
+
+echo "Old backups cleaned up"
+```
+
+#### **Restore Script**
+```bash
+#!/bin/bash
+# scripts/db-restore.sh
+
+set -e
+
+DB_HOST="${DB_HOST:-localhost}"
+DB_PORT="${DB_PORT:-5432}"
+DB_NAME="${DB_NAME:-project}"
+DB_USER="${DB_USER:-project}"
+DB_PASSWORD="${DB_PASSWORD:-project123}"
+
+BACKUP_FILE="$1"
+
+if [ -z "$BACKUP_FILE" ]; then
+    echo "Usage: $0 <backup_file>"
+    echo "Example: $0 backups/database/project_db_backup_20240118_143022.sql.gz"
+    exit 1
+fi
+
+if [ ! -f "$BACKUP_FILE" ]; then
+    echo "Backup file not found: $BACKUP_FILE"
+    exit 1
+fi
+
+echo "Restoring database from backup: $BACKUP_FILE"
+
+# Confirm before proceeding
+read -p "This will overwrite the current database. Are you sure? (y/N): " -n 1 -r
+echo
+if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    echo "Restore cancelled"
+    exit 1
+fi
+
+# Restore database
+if [[ "$BACKUP_FILE" == *.gz ]]; then
+    gunzip -c "$BACKUP_FILE" | PGPASSWORD="$DB_PASSWORD" psql \
+        -h "$DB_HOST" \
+        -p "$DB_PORT" \
+        -U "$DB_USER" \
+        -d "$DB_NAME"
+else
+    PGPASSWORD="$DB_PASSWORD" psql \
+        -h "$DB_HOST" \
+        -p "$DB_PORT" \
+        -U "$DB_USER" \
+        -d "$DB_NAME" \
+        -f "$BACKUP_FILE"
+fi
+
+echo "Database restore completed"
+```
+
+### **Schema Synchronization**
+
+#### **Schema Validation Script**
+```bash
+#!/bin/bash
+# scripts/db-validate-schema.sh
+
+set -e
+
+DB_HOST="${DB_HOST:-localhost}"
+DB_PORT="${DB_PORT:-5432}"
+DB_NAME="${DB_NAME:-project}"
+DB_USER="${DB_USER:-project}"
+DB_PASSWORD="${DB_PASSWORD:-project123}"
+
+SCHEMA_FILE="scripts/init-db.sql"
+
+echo "Validating database schema..."
+
+# Extract schema from database
+DB_SCHEMA=$(mktemp)
+psql "postgresql://$DB_USER:$DB_PASSWORD@$DB_HOST:$DB_PORT/$DB_NAME" -c "\d+" > "$DB_SCHEMA"
+
+# Extract schema from init script
+INIT_SCHEMA=$(mktemp)
+# This would need a more sophisticated approach to extract schema from init script
+
+# Compare schemas (simplified)
+echo "Schema validation completed"
+echo "Current database schema:"
+cat "$DB_SCHEMA"
+
+# Cleanup
+rm -f "$DB_SCHEMA" "$INIT_SCHEMA"
+```
+
+### **Docker Integration**
+
+#### **Docker Compose Database Configuration**
+```yaml
+# docker-compose.yml database section
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: project-postgres
+    environment:
+      - POSTGRES_DB=project
+      - POSTGRES_USER=project
+      - POSTGRES_PASSWORD=project123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+      - ./scripts/migrations:/docker-entrypoint-initdb.d/migrations:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U project"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - project-network
+
+volumes:
+  postgres_data:
+    driver: local
+```
+
+### **Environment Configuration**
+
+#### **Database Environment Variables**
+```bash
+# .env file database section
+# Database Configuration
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=project
+DB_USER=project
+DB_PASSWORD=project123
+
+# Connection Pool Settings
+DB_POOL_MIN=2
+DB_POOL_MAX=10
+DB_POOL_IDLE_TIMEOUT=30000
+
+# Migration Settings
+DB_MIGRATE_AUTO=true
+DB_MIGRATE_DIR=scripts/migrations
+
+# Backup Settings
+DB_BACKUP_RETENTION_DAYS=7
+DB_BACKUP_DIR=backups/database
+```
+
+### **Quality Assurance**
+
+#### **Schema Validation Checklist**
+- [ ] All tables have primary keys
+- [ ] Foreign key constraints are properly defined
+- [ ] Indexes are created for performance-critical queries
+- [ ] Data types are appropriate for the content
+- [ ] Constraints prevent invalid data
+- [ ] Triggers are properly configured
+- [ ] Permissions are correctly set
+- [ ] Large text fields use TEXT type (not VARCHAR)
+- [ ] JSONB fields have GIN indexes for query performance
+
+#### **Migration Best Practices**
+- [ ] Each migration is atomic and reversible
+- [ ] Migrations are tested in development first
+- [ ] Backup is created before applying migrations
+- [ ] Migration scripts are version controlled
+- [ ] Rollback procedures are documented
+- [ ] Performance impact is considered
+- [ ] Data integrity is maintained
+
+#### **Backup and Recovery**
+- [ ] Regular automated backups are scheduled
+- [ ] Backup files are compressed and encrypted
+- [ ] Backup retention policy is enforced
+- [ ] Restore procedures are tested regularly
+- [ ] Point-in-time recovery is available
+- [ ] Backup monitoring and alerting is configured
+
+### **Monitoring and Maintenance**
+
+#### **Database Health Checks**
+```sql
+-- Check database size
+SELECT 
+    pg_size_pretty(pg_database_size(current_database())) as database_size;
+
+-- Check table sizes
+SELECT 
+    schemaname,
+    tablename,
+    pg_size_pretty(pg_total_relation_size(schemaname||'.'||tablename)) as size
+FROM pg_tables 
+WHERE schemaname = 'public'
+ORDER BY pg_total_relation_size(schemaname||'.'||tablename) DESC;
+
+-- Check index usage
+SELECT 
+    schemaname,
+    tablename,
+    indexname,
+    idx_scan,
+    idx_tup_read,
+    idx_tup_fetch
+FROM pg_stat_user_indexes
+ORDER BY idx_scan DESC;
+
+-- Check slow queries
+SELECT 
+    query,
+    calls,
+    total_time,
+    mean_time,
+    rows
+FROM pg_stat_statements
+ORDER BY mean_time DESC
+LIMIT 10;
+```
+
+#### **Performance Optimization**
+```sql
+-- Analyze table statistics
+ANALYZE;
+
+-- Vacuum tables to reclaim space
+VACUUM ANALYZE;
+
+-- Check for bloat
+SELECT 
+    schemaname,
+    tablename,
+    n_dead_tup,
+    n_live_tup,
+    round(n_dead_tup * 100.0 / nullif(n_live_tup, 0), 2) as dead_percentage
+FROM pg_stat_user_tables
+WHERE n_dead_tup > 0
+ORDER BY dead_percentage DESC;
+```
+
+---
+
+**These standards ensure robust, maintainable, and performant database management across the project.**
+description:
+globs:
+alwaysApply: false
+---

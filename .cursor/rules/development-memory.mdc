@@ -1,14 +1,9 @@
----
-description: 
-globs: dadms-services/**/*.js, dadms-services/**/*.ts, dadms-ui/**/*.tsx, dadms-ui/**/*.ts, dadms-infrastructure/**/*.yml, .cursor/**/*.mdc
-alwaysApply: false
----
 
-# DADMS Development Context Memory
+# Project Development Context Memory
 
 ## Automatic Context for Development Files
 
-When working on DADMS development files, automatically:
+When working on project development files, automatically:
 
 1. **Retrieve relevant memories** about the specific service or component
 2. **Apply established patterns** from previous implementations  
@@ -17,25 +12,30 @@ When working on DADMS development files, automatically:
 
 ## Service-Specific Context
 
-### Backend Services (`dadms-services/*`)
+### Backend Services (`services/*`)
 - Port allocations and service configurations
 - API patterns and authentication methods
 - Database connection patterns
 - Inter-service communication protocols
 
-### Frontend Development (`dadms-ui/*`)
+### Frontend Development (`ui/*`)
 - Component architecture and patterns
 - Theme system and styling approaches
 - State management decisions
 - API integration patterns
 
-### Infrastructure (`dadms-infrastructure/*`)
+### Infrastructure (`infrastructure/*`)
 - Container configurations and port mappings
 - Service dependencies and startup order
 - Volume mounts and data persistence
 - Environment variables and secrets
 
 ### Cursor Configuration (`.cursor/*`)
+- Rule organization and best practices
+- MCP server configurations
+- Memory management patterns
+
+This ensures development context is automatically enhanced with project memory.
 - Rule organization and best practices
 - MCP server configurations
 - Memory management patterns

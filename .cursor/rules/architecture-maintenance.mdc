@@ -1,15 +1,10 @@
----
-description: Automatically maintain architecture documentation and diagrams when changes occur to DADMS system components, services, or infrastructure.
-globs: dadms-services/**/*.js, dadms-services/**/*.ts, dadms-infrastructure/**/*.yml, dadms-infrastructure/**/*.yaml, package.json, docker-compose.yml, *.md
-alwaysApply: false
----
 
-# DADMS Architecture Documentation Maintenance
+# Project Architecture Documentation Maintenance
 
 ## When to Use This Rule
 
 This rule triggers automatically when:
-- **Service changes**: Adding/modifying services in `dadms-services/`
+- **Service changes**: Adding/modifying services in `services/`
 - **Infrastructure changes**: Updating Docker configurations
 - **API modifications**: Changing endpoints or service interfaces
 - **Documentation editing**: Working on architecture-related docs
@@ -51,7 +46,7 @@ Maintain this standardized structure:
 
 ```
 docs/architecture/
-├── system-overview.md          # High-level DADMS architecture
+├── system-overview.md          # High-level project architecture
 ├── service-architecture.md     # Microservices design & relationships  
 ├── data-flow.md               # Data processing and movement
 ├── infrastructure.md          # Container and deployment topology
@@ -69,7 +64,7 @@ docs/architecture/
 ```mermaid
 graph TB
     subgraph "Frontend"
-        UI[DADMS UI :3000]
+        UI[Project UI :3000]
     end
     
     subgraph "API Gateway"
@@ -77,153 +72,213 @@ graph TB
     end
     
     subgraph "Core Services"
-        PS[Project Service :3001]
-        LLM[LLM Service :3002]
-        KS[Knowledge Service :3003]
-        EM[Event Manager :3004]
-        DAS[Digital Assistance :3005]
+        S1[Service 1 :3001]
+        S2[Service 2 :3002]
+        S3[Service 3 :3003]
+        S4[Service 4 :3004]
+        S5[Service 5 :3005]
     end
     
     subgraph "Data Layer"
         PG[(PostgreSQL :5432)]
         NEO[(Neo4j :7687)]
         REDIS[(Redis :6379)]
-        QDRANT[(Qdrant :6333)]
+        MQ[(Message Broker :5672)]
     end
     
     UI --> GATEWAY
-    GATEWAY --> PS
-    GATEWAY --> LLM
-    GATEWAY --> KS
-    PS --> PG
-    LLM --> NEO
-    KS --> QDRANT
+    GATEWAY --> S1
+    GATEWAY --> S2
+    GATEWAY --> S3
+    S1 --> PG
+    S2 --> NEO
+    S3 --> REDIS
 ```
 
 #### **Infrastructure Topology Template**
 ```mermaid
 graph TB
     subgraph "Development Environment"
-        subgraph "Applications"
-            UI_APP[dadms-ui :3000]
-            BACKEND[dadms-backend :3001]
+        subgraph "Application Stack"
+            APP[Application Container]
+            WORKER[Worker Container]
         end
         
-        subgraph "Infrastructure Services"
-            PG_CONTAINER[PostgreSQL Container :5432]
-            NEO_CONTAINER[Neo4j Container :7687]
-            NEO_MEM[Neo4j Memory :7688]
-            REDIS_CONTAINER[Redis Container :6379]
-            QDRANT_CONTAINER[Qdrant Container :6333]
+        subgraph "Data Services"
+            DB[(PostgreSQL)]
+            CACHE[(Redis)]
+            SEARCH[(Search Engine)]
         end
         
-        subgraph "Management"
-            PM2[PM2 Process Manager]
-            PODMAN[Podman Compose]
+        subgraph "Message Broker"
+            MQ[(Message Queue)]
+        end
+        
+        subgraph "Monitoring"
+            LOGS[Log Aggregator]
+            METRICS[Metrics Collector]
         end
     end
     
-    PM2 --> UI_APP
-    PM2 --> BACKEND
-    PODMAN --> PG_CONTAINER
-    PODMAN --> NEO_CONTAINER
-    PODMAN --> NEO_MEM
-    PODMAN --> REDIS_CONTAINER
-    PODMAN --> QDRANT_CONTAINER
+    APP --> DB
+    APP --> CACHE
+    WORKER --> MQ
+    WORKER --> SEARCH
+    APP --> LOGS
+    APP --> METRICS
 ```
 
-### **Automatic Documentation Tasks**
+#### **Data Flow Template**
+```mermaid
+flowchart LR
+    subgraph "Input Sources"
+        API[API Requests]
+        FILE[File Uploads]
+        STREAM[Data Streams]
+    end
+    
+    subgraph "Processing"
+        VALIDATE[Validation]
+        TRANSFORM[Transformation]
+        ENRICH[Enrichment]
+    end
+    
+    subgraph "Storage"
+        DB[(Database)]
+        CACHE[(Cache)]
+        ARCHIVE[(Archive)]
+    end
+    
+    subgraph "Output"
+        API_OUT[API Responses]
+        NOTIFY[Notifications]
+        EXPORT[Exports]
+    end
+    
+    API --> VALIDATE
+    FILE --> VALIDATE
+    STREAM --> VALIDATE
+    
+    VALIDATE --> TRANSFORM
+    TRANSFORM --> ENRICH
+    
+    ENRICH --> DB
+    ENRICH --> CACHE
+    
+    DB --> API_OUT
+    CACHE --> API_OUT
+    DB --> NOTIFY
+    DB --> EXPORT
+```
+
+### **Documentation Update Triggers**
+
+#### **Service Layer Changes**
+- **New service added** → Update service architecture diagram
+- **API endpoint modified** → Update API documentation
+- **Service dependency changed** → Update dependency graph
+- **Service configuration updated** → Update deployment docs
+
+#### **Infrastructure Changes**
+- **New container added** → Update infrastructure topology
+- **Port configuration changed** → Update port mapping docs
+- **Volume mounts modified** → Update storage documentation
+- **Network configuration updated** → Update network topology
+
+#### **Data Layer Changes**
+- **New database added** → Update data architecture diagram
+- **Schema modifications** → Update data model documentation
+- **Migration scripts** → Update migration documentation
+- **Data flow changes** → Update data flow diagrams
+
+#### **Security Changes**
+- **Authentication updates** → Update security architecture
+- **Authorization changes** → Update access control docs
+- **Encryption modifications** → Update security patterns
+- **Compliance requirements** → Update compliance documentation
+
+### **Automated Documentation Updates**
 
 #### **When Adding New Services**
-1. **Update service architecture diagram** with new service node
-2. **Add service to infrastructure diagram** with port allocation
-3. **Document API endpoints** in `docs/api/service-name.md`
-4. **Update system overview** if it's a major component
-5. **Create ADR** if architectural decision was made
+1. **Update service architecture diagram**
+2. **Add service documentation**
+3. **Update API documentation**
+4. **Update deployment configuration**
+5. **Create service-specific tests**
 
 #### **When Modifying Infrastructure**
-1. **Update infrastructure topology** with changes
-2. **Verify port allocations** are documented correctly
-3. **Update deployment guides** in `docs/deployment/`
-4. **Check security implications** and update security docs
+1. **Update infrastructure topology**
+2. **Update deployment scripts**
+3. **Update environment configuration**
+4. **Update monitoring configuration**
+5. **Update backup procedures**
 
-#### **When Changing APIs**
-1. **Update service relationships** in service architecture
-2. **Document API changes** in OpenAPI specs
-3. **Update integration patterns** if external APIs affected
-4. **Review data flow diagrams** for data processing changes
+#### **When Changing Data Models**
+1. **Update data flow diagrams**
+2. **Update database schema docs**
+3. **Create migration scripts**
+4. **Update API documentation**
+5. **Update test data**
 
 ### **Architecture Decision Records (ADRs)**
 
-Create ADRs for significant decisions:
-
-#### **ADR Template** (`docs/architecture/decision-records/ADR-XXX-title.md`)
+#### **ADR Template**
 ```markdown
-# ADR-XXX: [Decision Title]
+# ADR-XXX: [Title]
 
 ## Status
-[Proposed | Accepted | Rejected | Deprecated | Superseded]
+[Proposed | Accepted | Deprecated | Superseded]
 
 ## Context
 [Describe the forces at play, including technological, political, social, and project local]
 
 ## Decision
-[Describe the change that we're proposing or have agreed to]
+[Describe the decision and its rationale]
 
 ## Consequences
 [Describe the resulting context, after applying the decision]
 
-## Alternatives Considered
-[List other options that were considered]
+## Implementation
+[Describe the implementation details]
 
 ## References
-[Links to supporting materials]
+[Link to relevant documentation, discussions, etc.]
 ```
 
-### **Documentation Quality Standards**
+#### **Required ADRs**
+- **ADR-001**: Technology stack selection
+- **ADR-002**: Database choice and design
+- **ADR-003**: API design patterns
+- **ADR-004**: Security architecture
+- **ADR-005**: Deployment strategy
+- **ADR-006**: Monitoring and observability
+- **ADR-007**: Testing strategy
+- **ADR-008**: Data management approach
 
-#### **Diagram Requirements**
-- **Consistent styling** across all Mermaid diagrams
-- **Clear labeling** with service names and ports
-- **Logical grouping** using subgraphs
-- **Current information** reflecting actual system state
-- **Version control** tracking diagram changes
+### **Quality Assurance**
 
-#### **Content Standards**
-- **Clear descriptions** of architectural patterns used
-- **Rationale explanations** for design decisions
-- **Integration details** for external systems
-- **Performance considerations** documented
-- **Security implications** addressed
+#### **Documentation Review Checklist**
+- [ ] All diagrams are current and accurate
+- [ ] Service relationships are properly documented
+- [ ] Data flows are clearly illustrated
+- [ ] Infrastructure topology is up to date
+- [ ] Security patterns are documented
+- [ ] Integration points are clearly defined
+- [ ] Deployment procedures are documented
+- [ ] Monitoring and alerting are configured
 
-### **Validation Checklist**
+#### **Architecture Validation**
+- **Service boundaries** are clearly defined
+- **Data ownership** is established
+- **API contracts** are documented
+- **Error handling** is consistent
+- **Security controls** are implemented
+- **Performance requirements** are met
+- **Scalability patterns** are in place
 
-Before considering architecture documentation complete:
+---
 
-- [ ] **All services** represented in service architecture diagram
-- [ ] **All containers** shown in infrastructure topology
-- [ ] **All ports** correctly documented and allocated
-- [ ] **Data flows** accurately represent processing
-- [ ] **API documentation** matches actual implementations
-- [ ] **ADRs created** for significant architectural decisions
-- [ ] **Cross-references** between related documents maintained
-- [ ] **Diagrams render correctly** in documentation tools
-
-## Integration with Development Workflow
-
-### **Pre-Commit Validation**
-- Architecture diagrams are current
-- Service documentation matches code
-- No undocumented architectural changes
-
-### **Code Review Requirements**
-- Architecture impacts identified and documented
-- Diagrams updated for infrastructure changes
-- ADRs created for significant decisions
-
-### **Deployment Validation**
-- Infrastructure topology matches deployment
-- Service relationships correctly documented
+**This ensures architecture documentation remains current and accurate as the project evolves.**
 - Performance and security considerations documented
 
 ---

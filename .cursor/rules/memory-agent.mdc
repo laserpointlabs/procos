@@ -1,10 +1,5 @@
----
-description: 
-globs: 
-alwaysApply: true
----
 
-# Seamless Memory Management for procos
+# Seamless Memory Management for Project Development
 
 ## Core Memory Behaviors
 
@@ -14,7 +9,7 @@ I will **automatically** store memories during these situations:
 - **Architecture decisions** or design pattern choices
 - **Problem solutions** that took multiple attempts
 - **System configuration** changes or discoveries
-- **Integration patterns** between procos services
+- **Integration patterns** between project services
 - **Performance optimizations** or best practices
 - **Bug fixes** with root cause analysis
 - **New feature implementations** with design rationale
@@ -59,7 +54,7 @@ I will **automatically** store memories during these situations:
 ```javascript
 // Automatically store entities like:
 {
-  name: "DADMS_Service_Integration_Pattern",
+  name: "Project_Service_Integration_Pattern",
   type: "architecture_pattern", 
   observations: [
     "Services communicate via REST APIs with standardized error handling",
@@ -79,7 +74,7 @@ I will **seamlessly** manage memory by:
 - **Cross-referencing** related concepts and patterns
 - **Retrieving** relevant context before making recommendations
 
-This ensures our DADMS development sessions build upon previous knowledge and maintain continuity across conversations.
+This ensures our project development sessions build upon previous knowledge and maintain continuity across conversations.
 
 ## Example Workflow
 
@@ -90,6 +85,11 @@ My Process:
 1. 🔍 Search memory for "authentication", "user_management", "security"
 2. 📋 Apply existing patterns (JWT, session management, etc.)
 3. 💻 Implement the solution
+4. 💾 Store: authentication decisions, security patterns, integration points
+5. 🔗 Link: to user service, database schemas, API patterns
+```
+
+This creates a **learning system** where each development session improves our collective knowledge base.
 4. 💾 Store: authentication decisions, security patterns, integration points
 5. 🔗 Link: to user service, database schemas, API patterns
 ```

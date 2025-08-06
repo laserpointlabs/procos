@@ -102,3 +102,21 @@ procos_*.pid
 # Test outputs
 test_results/
 test_output/
+
+# Node.js / Next.js
+node_modules/
+.next/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnp/
+.pnp.js
+.pnp.cjs
+.turbo/
+dist/
+build/
+.output/
+.nuxt/
+out/
+coverage/

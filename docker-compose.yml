@@ -1,6 +1,21 @@
 version: '3.8'
 
 services:
+  # ProcOS UI
+  ui:
+    build:
+      context: ./ui
+      dockerfile: Dockerfile
+    container_name: procos-ui
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_BASE_URL=http://localhost:8080/engine-rest # Example for Camunda
+    networks:
+      - procos-network
+    depends_on:
+      - camunda
+
   # Camunda Platform - The heart of ProcOS
   camunda:
     image: camunda/camunda-bpm-platform:latest

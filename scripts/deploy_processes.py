@@ -27,14 +27,11 @@ from rich.logging import RichHandler
 # Load environment
 load_dotenv()
 
-# Setup rich console and logging
-console = Console()
-logging.basicConfig(
-    level=getattr(logging, os.getenv('LOG_LEVEL', 'INFO')),
-    format='%(message)s',
-    handlers=[RichHandler(console=console)]
-)
-logger = logging.getLogger("procos.deploy_processes")
+# Setup logging using centralized configuration
+sys.path.append(str(Path(__file__).parent.parent / "src"))
+from utils.logging_config import get_service_logger
+
+logger = get_service_logger("deploy_processes")
 
 
 class ProcessDeployer:

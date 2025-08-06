@@ -31,16 +31,11 @@ from rich.panel import Panel
 # Load environment variables
 load_dotenv()
 
-# Setup rich console and logging
-console = Console()
-logging.basicConfig(
-    level=getattr(logging, os.getenv('LOG_LEVEL', 'INFO')),
-    format='%(message)s',
-    datefmt='[%X]',
-    handlers=[RichHandler(console=console, rich_tracebacks=True)]
-)
+# Setup logging using centralized configuration
+sys.path.append(str(Path(__file__).parent.parent))
+from utils.logging_config import get_kernel_logger
 
-logger = logging.getLogger("procos.kernel")
+logger = get_kernel_logger("kernel")
 
 class ProcOSConfig:
     """Configuration management for ProcOS"""

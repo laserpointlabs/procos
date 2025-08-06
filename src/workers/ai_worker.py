@@ -30,14 +30,11 @@ import ollama
 # Load environment
 load_dotenv()
 
-# Setup logging
-console = Console()
-logging.basicConfig(
-    level=getattr(logging, os.getenv('LOG_LEVEL', 'INFO')),
-    format='%(message)s',
-    handlers=[RichHandler(console=console)]
-)
-logger = logging.getLogger("procos.ai_worker")
+# Setup logging using centralized configuration
+sys.path.append(str(Path(__file__).parent.parent))
+from utils.logging_config import get_worker_logger
+
+logger = get_worker_logger("ai_worker")
 
 class AIWorker:
     """

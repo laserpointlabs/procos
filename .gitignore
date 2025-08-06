@@ -53,10 +53,10 @@ venv.bak/
 ehthumbs.db
 Thumbs.db
 
-# Logs
-*.log
-logs/
-log/
+# Logs - ignore all log files in root but allow logs/ directory structure
+/*.log
+logs/*.log
+logs/**/*.log
 
 # Runtime
 *.pid

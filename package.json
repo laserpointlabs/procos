@@ -4,7 +4,7 @@
     "description": "Decision Analysis and Decision Management System - Clean Architecture Rebuild",
     "main": "index.js",
     "scripts": {
-        "dev": "echo 'DADMS 2.0 Development Environment' && echo 'Services will be added during Week 1 implementation'",
+        "dev": "npm run dev -w ui",
         "build": "echo 'Building DADMS 2.0...'",
         "test": "echo 'Running DADMS 2.0 tests...'",
         "clean": "rm -rf node_modules dist build",
@@ -28,8 +28,7 @@
         "npm": ">=8.0.0"
     },
     "workspaces": [
-        "dadms-services/*",
-        "dadms-ui"
+        "ui"
     ],
     "dependencies": {
         "@emotion/react": "^11.14.0",

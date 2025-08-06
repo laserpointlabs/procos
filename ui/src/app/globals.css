@@ -1,7 +1,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import "tailwindcss";
 @import "@vscode/codicons/dist/codicon.css";
 
 /* Ensure codicon font loads properly without theme interference */

@@ -5,6 +5,45 @@
 
 I will **automatically** enforce these standards during all development activities:
 
+### 📝 **MANDATORY: Centralized Logging Standards**
+
+#### **ALL Python Files MUST Use Centralized Logging**
+- **NEVER** use `logging.basicConfig()` or `logging.getLogger(__name__)`
+- **ALWAYS** use `from utils.logging_config import get_[TYPE]_logger`
+- **REQUIRED** import pattern for all new Python files:
+
+```python
+#!/usr/bin/env python3
+import sys
+from pathlib import Path
+
+# Add src to path (adjust relative path as needed)
+sys.path.append(str(Path(__file__).parent.parent))  # From src/workers/, src/services/
+# OR for scripts/tests:
+sys.path.append(str(Path(__file__).parent.parent / "src"))
+
+# MANDATORY: Use centralized logging
+from utils.logging_config import get_worker_logger, get_service_logger, get_kernel_logger, get_test_logger
+
+# Choose appropriate logger type:
+logger = get_worker_logger("service_name")    # For workers
+logger = get_service_logger("service_name")   # For services  
+logger = get_kernel_logger("component_name")  # For kernel components
+logger = get_test_logger("test_name")         # For tests
+```
+
+#### **Log Categories & Locations**
+- **Workers**: `get_worker_logger()` → `logs/workers/[name].log`
+- **Services**: `get_service_logger()` → `logs/services/[name].log`  
+- **Kernel**: `get_kernel_logger()` → `logs/kernel/[name].log`
+- **Tests**: `get_test_logger()` → `logs/tests/[name].log`
+
+#### **Message Standards**
+- Use emojis for categorization: 🚀 ✅ ❌ ⚠️ 🔍 📋 💾 🌐
+- Be descriptive: `logger.info("🚀 AI Worker ai_worker_001 started")`
+- Include context: `logger.error(f"❌ Failed to deploy {filename}: {error}")`
+- Appropriate levels: DEBUG → INFO → WARNING → ERROR → CRITICAL
+
 ### 📁 **File Organization Standards**
 
 #### **Utility Scripts Location**

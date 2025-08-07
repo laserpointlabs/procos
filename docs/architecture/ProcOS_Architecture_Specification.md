@@ -29,7 +29,13 @@
 
 ### 1.1 What is ProcOS?
 
-**ProcOS** (Process-Oriented Operating System) is a revolutionary Virtual Operating System (VOS) that fundamentally reimagines how computing systems operate by placing **Business Process Model and Notation (BPMN)** at the core of all system operations. Unlike traditional operating systems that rely on imperative code and rigid system calls, ProcOS treats BPMN processes as the "kernel language" - the fundamental abstraction through which all system operations, orchestration, and interactions are defined and executed.
+**ProcOS** (Process-Oriented Operating System) is a revolutionary Virtual Operating System (VOS) that fundamentally reimagines computing as a **process-native ecosystem**. Like a smart car that's simple to drive, easy to work on, and continuously improves itself, ProcOS provides different levels of interaction for different users while maintaining a unified foundation where **everything is a process definition**.
+
+At its core, ProcOS features:
+- **Process Definition Executors (PDEs)**: CPU-like intelligent execution units that process individual tasks
+- **Universal Process Architecture**: System processes, user processes, and worker processes all use BPMN
+- **Self-Growing Intelligence**: Digital Assistant System (DAS) that continuously improves the system 24/7
+- **Composable Execution**: Every component can be combined, customized, and evolved through process definitions
 
 ### 1.2 Core Philosophy: "Processes Drive Everything"
 
@@ -46,20 +52,23 @@ This process-centric approach provides unprecedented **flexibility** and **exten
 
 | Priority | Quality Goal | Description |
 |----------|-------------|-------------|
-| 1 | **Flexibility** | System behavior entirely defined through BPMN processes, enabling runtime reconfiguration |
-| 2 | **Extensibility** | New capabilities added by deploying new BPMN processes and external task handlers |
-| 3 | **Maintainability** | Clear process definitions make system behavior transparent and auditable |
-| 4 | **Decoupling** | Services communicate only through process-mediated external tasks |
-| 5 | **Observability** | Complete execution traces through BPMN process instances |
+| 1 | **Intelligent Adaptability** | PDEs and DAS continuously optimize execution strategies and system performance |
+| 2 | **Universal Composability** | Everything is a process - system, user, and worker processes can be combined seamlessly |
+| 3 | **Self-Improvement** | System grows and improves 24/7 through DAS innovation cycles |
+| 4 | **Multi-Level Accessibility** | Serves drivers, mechanics, and specialists with appropriate interfaces |
+| 5 | **Process Transparency** | Complete visibility into task execution through PDE pipelines and process monitoring |
+| 6 | **Horizontal Scalability** | PDEs scale like CPU cores, processes scale like applications |
 
 ### 1.4 Stakeholders
 
-| Role | Expectations | Concerns |
-|------|-------------|----------|
-| **Process Engineers** | Intuitive BPMN-based system definition | Process complexity management |
-| **Service Developers** | Simple external task interfaces | Service integration patterns |
-| **System Operators** | Clear monitoring and debugging | Performance and reliability |
-| **Business Analysts** | Traceable business logic | Process governance |
+ProcOS serves three primary user archetypes, like a smart car that accommodates different levels of expertise:
+
+| Role | Car Analogy | Expectations | ProcOS Interface |
+|------|-------------|-------------|------------------|
+| **Drivers (End Users)** | Use steering wheel, gas, brake | Simple business workflows | Pre-built process templates, dashboard UI |
+| **Mechanics (Super Users)** | Open hood, work on components | Customize system processes | RAG pipelines, monitoring configs, integration workflows |  
+| **Specialists (Developers)** | Tune engine internals | Optimize execution architecture | PDE tuning, custom worker processes, endpoint optimization |
+| **Digital Assistant (DAS)** | Onboard computer helping everyone | Continuous system improvement | 24/7 monitoring, optimization suggestions, automatic enhancements |
 
 ### 1.5 The Bootstrap Challenge
 
@@ -192,10 +201,84 @@ The microkernel is intentionally minimal, providing only the essential bootstrap
 
 ### 4.1 Fundamental Design Principles
 
-#### 4.1.1 Process-First Architecture
-Every system capability is expressed as a BPMN process, creating a unified abstraction layer that makes system behavior explicit, auditable, and reconfigurable at runtime.
+#### 4.1.1 Universal Process Architecture
+**Everything is a process definition** - system processes, user processes, and worker processes all use BPMN, creating unprecedented consistency and composability across the entire system.
 
-#### 4.1.2 Minimal Microkernel Bootstrap
+#### 4.1.2 CPU-like Process Execution
+**Process Definition Executors (PDEs)** act as intelligent CPU cores that can:
+- Evaluate tasks and route them to optimal endpoints
+- Provide built-in testing and validation
+- Learn and adapt execution strategies over time
+- Scale horizontally like processor cores
+
+#### 4.1.3 Self-Growing Intelligence
+**Digital Assistant System (DAS)** operates 24/7 to:
+- Monitor system performance and usage patterns
+- Build and test improvements in sandbox environments
+- Suggest optimizations with transparent benefits
+- Deploy successful innovations gradually
+
+#### 4.1.4 Multi-Level User Experience
+Like a smart car, ProcOS accommodates different user types:
+- **Drivers**: Simple business workflows through intuitive interfaces
+- **Mechanics**: System process customization and optimization
+- **Specialists**: Deep architectural tuning and custom development
+
+#### 4.1.5 Soft Coding Paradigm: The MATLAB/Simulink Evolution
+
+**Revolutionary Insight**: ProcOS represents the same paradigm shift at the OS level that MATLAB/Simulink brought to modeling & simulation. We've moved beyond the traditional hard coding vs. no-code dichotomy to create a "soft coding" environment.
+
+**The Three Coding Paradigms**:
+
+```mermaid
+graph LR
+    subgraph "🔒 Hard Coding"
+        HC[Specialist + Domain Expert<br/>Full custom development]
+        HC --> HC_RESULT[Complete flexibility<br/>High development cost]
+    end
+    
+    subgraph "🎯 Soft Coding (ProcOS)"
+        SC[Standard + Specialized Blocks<br/>Created by pros, DAS, power users]
+        SC --> SC_UI[UI-level configuration<br/>Like visual programming]
+        SC --> SC_RESULT[High flexibility<br/>Low development cost]
+    end
+    
+    subgraph "🚫 No Code"
+        NC[Drag & Drop Only<br/>Fixed functionality]
+        NC --> NC_RESULT[Limited flexibility<br/>What you get is what you get]
+    end
+    
+    classDef hard fill:#ffebee,stroke:#d32f2f,stroke-width:2px
+    classDef soft fill:#e8f5e8,stroke:#2e7d32,stroke-width:3px
+    classDef no fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    
+    class HC,HC_RESULT hard
+    class SC,SC_UI,SC_RESULT soft
+    class NC,NC_RESULT no
+```
+
+**ProcOS Soft Coding Benefits**:
+- **Standard Blocks**: Pre-built, tested, optimized process components
+- **Specialized Blocks**: Custom components for specific domains (created by specialists)
+- **DAS-Generated Blocks**: AI creates new blocks based on usage patterns
+- **Power User Blocks**: Advanced users extend capabilities through process definitions
+- **UI-Level Flexibility**: Previously hard-coded logic becomes configurable at the interface
+
+**Example Evolution**:
+```
+Hard Coding Era:
+"I need email integration" → Hire developer → Write custom SMTP code → Deploy → Maintain
+
+No-Code Era:
+"I need email integration" → Use pre-built email block → Limited to vendor capabilities
+
+ProcOS Soft Coding Era:
+"I need email integration" → Use email worker process → Customize at UI level → DAS suggests optimizations → Power users extend with specialized blocks
+```
+
+This approach enables **true composability** where complex systems are built from intelligent, adaptable blocks rather than monolithic code or rigid no-code components.
+
+#### 4.1.6 Minimal Microkernel Bootstrap
 A thin Python-based microkernel provides only essential bootstrapping:
 ```python
 # Simplified microkernel bootstrap
@@ -310,54 +393,183 @@ Security rules embedded directly in process definitions:
 
 ### 5.1 Level 1: System Overview
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                        ProcOS Core                          │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  ┌─────────────────────────────────────────────────────┐    │
-│  │              Microkernel (Python)                  │    │
-│  │  • Bootstrap sequence                              │    │
-│  │  • Process monitoring                              │    │
-│  │  • Basic error handling                            │    │
-│  └─────────────────────────────────────────────────────┘    │
-│                                │                            │
-│  ┌─────────────────────────────▼───────────────────────┐    │
-│  │              Camunda Engine (Java)                 │    │
-│  │  • BPMN 2.0 execution engine                      │    │
-│  │  • Process instance management                     │    │
-│  │  • External task distribution                     │    │
-│  │  • Event correlation and messaging                │    │
-│  └─────────────────────────────────────────────────────┘    │
-│                                │                            │
-│  ┌─────────────────────────────▼───────────────────────┐    │
-│  │           Process Layer (BPMN)                     │    │
-│  │  • Root orchestration processes                   │    │
-│  │  • System management processes                    │    │
-│  │  • Application business processes                 │    │
-│  └─────────────────────────────────────────────────────┘    │
-│                                │                            │
-│  ┌─────────────────────────────▼───────────────────────┐    │
-│  │             Worker Layer                           │    │
-│  │  • Generic external task workers                  │    │
-│  │  • Service adapters                               │    │
-│  │  • Message routing                                │    │
-│  └─────────────────────────────────────────────────────┘    │
-└─────────────────────────────────────────────────────────────┘
-                                │
-┌─────────────────────────────▼───────────────────────────────┐
-│                    Service Ecosystem                        │
-├─────────────────────────────────────────────────────────────┤
-│  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐ │
-│  │ Python  │ │ Scilab  │ │   AI    │ │  Email  │ │  More   │ │
-│  │ Runtime │ │ Engine  │ │ Services│ │ Service │ │Services │ │
-│  └─────────┘ └─────────┘ └─────────┘ └─────────┘ └─────────┘ │
-└─────────────────────────────────────────────────────────────┘
+```mermaid
+graph TB
+    subgraph "🚗 ProcOS: Process-Native Smart Operating System"
+        subgraph "🔬 Microkernel Layer (Engine Block)"
+            MK[ProcOS Microkernel<br/>Minimal Bootstrap]
+            MK --> CAM[Camunda Engine<br/>BPMN Runtime]
+            MK --> PDEM[PDE Manager<br/>CPU-like Scheduler]
+        end
+        
+        subgraph "⚡ Process Definition Executor Layer (Pistons)"
+            PDE1[General Purpose PDE<br/>Multi-task execution]
+            PDE2[AI Specialized PDE<br/>Intelligent routing]
+            PDE3[Integration PDE<br/>API & data operations]
+            MPDE[Meta-PDE<br/>PDE orchestration]
+            
+            PDEM --> PDE1
+            PDEM --> PDE2
+            PDEM --> PDE3
+            PDEM --> MPDE
+        end
+        
+        subgraph "📋 Universal Process Layer (Everything is a Process)"
+            subgraph "🔧 System Processes"
+                SYSPROC[System Orchestrator]
+                RAGPROC[RAG Pipeline Process]
+                DASPROC[DAS Supervisory Process]
+                MONPROC[Health Monitoring Process]
+            end
+            
+            subgraph "👤 User Processes"
+                USERPROC1[Business Workflow]
+                USERPROC2[Data Processing]
+                USERPROC3[AI Workflow]
+            end
+            
+            subgraph "🔌 Worker Processes (Even Workers are Processes!)"
+                AI_WORKER[AI Worker Process]
+                HTTP_WORKER[HTTP Worker Process]
+                EMAIL_WORKER[Email Worker Process]
+                PYTHON_WORKER[Python Worker Process]
+            end
+        end
+        
+        subgraph "🤖 Digital Assistant System (DAS)"
+            DAS_OBSERVE[24/7 System Observation]
+            DAS_LEARN[Pattern Learning]
+            DAS_IMPROVE[Continuous Improvement]
+            DAS_SUGGEST[Proactive Suggestions]
+        end
+    end
+    
+    CAM --> SYSPROC
+    CAM --> USERPROC1
+    CAM --> AI_WORKER
+    
+    SYSPROC -.->|tasks| PDE1
+    USERPROC1 -.->|tasks| PDE2
+    USERPROC2 -.->|tasks| PDE3
+    
+    PDE1 --> AI_WORKER
+    PDE2 --> HTTP_WORKER
+    PDE3 --> EMAIL_WORKER
+    MPDE --> PYTHON_WORKER
+    
+    DAS_OBSERVE --> DAS_LEARN
+    DAS_LEARN --> DAS_IMPROVE
+    DAS_IMPROVE --> DAS_SUGGEST
+    DAS_SUGGEST --> SYSPROC
+    
+    classDef microkernel fill:#ffebee,stroke:#d32f2f,stroke-width:3px
+    classDef pde fill:#e8f5e8,stroke:#2e7d32,stroke-width:3px
+    classDef process fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef das fill:#fff3e0,stroke:#f57c00,stroke-width:3px
+    
+    class MK,CAM,PDEM microkernel
+    class PDE1,PDE2,PDE3,MPDE pde
+    class SYSPROC,RAGPROC,USERPROC1,AI_WORKER,HTTP_WORKER process
+    class DAS_OBSERVE,DAS_LEARN,DAS_IMPROVE,DAS_SUGGEST das
 ```
 
 ### 5.2 Level 2: Core Components
 
-#### 5.2.1 Microkernel Component
+#### 5.2.1 Process Definition Executor (PDE) - The Heart of ProcOS
+
+**Revolutionary Concept**: PDEs act as CPU-like execution units that intelligently process individual tasks from process definitions.
+
+**PDE Internal Architecture**:
+```mermaid
+graph TB
+    subgraph "🔄 PDE Internal Pipeline"
+        START[Start Block<br/>Initialize Context]
+        TEST[Test Block<br/>Built-In Test (BIT)]
+        GATE[Gateway Block<br/>Intelligent Routing]
+        VALID[Validation Block<br/>Quality Control]
+        COMPLETE[Completion Block<br/>Return Results]
+        
+        START --> TEST
+        TEST --> GATE
+        GATE --> VALID
+        VALID --> COMPLETE
+    end
+    
+    subgraph "🧠 Intelligence Layer"
+        EVAL[Task Evaluator]
+        ROUTER[Endpoint Router]
+        VALIDATOR[Result Validator]
+        LEARNER[Adaptive Learner]
+    end
+    
+    subgraph "🔌 Worker Process Endpoints"
+        AI_WP[AI Worker Process]
+        HTTP_WP[HTTP Worker Process]
+        PY_WP[Python Worker Process]
+        CUSTOM_WP[Custom Worker Processes]
+    end
+    
+    TEST --> EVAL
+    GATE --> ROUTER
+    VALID --> VALIDATOR
+    COMPLETE --> LEARNER
+    
+    ROUTER --> AI_WP
+    ROUTER --> HTTP_WP
+    ROUTER --> PY_WP
+    ROUTER --> CUSTOM_WP
+    
+    classDef pipeline fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    classDef intelligence fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef worker fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    
+    class START,TEST,GATE,VALID,COMPLETE pipeline
+    class EVAL,ROUTER,VALIDATOR,LEARNER intelligence
+    class AI_WP,HTTP_WP,PY_WP,CUSTOM_WP worker
+```
+
+**PDE Types and Specialization**:
+- **General Purpose PDE**: Handles any task type with multi-endpoint capabilities
+- **AI Specialized PDE**: Optimized for AI workflows with intelligent model selection
+- **Integration PDE**: Focused on API calls, data processing, and system integration
+- **Meta-PDE**: Orchestrates other PDEs for complex multi-step operations
+
+#### 5.2.2 Workers as Process Definitions
+
+**Revolutionary Insight**: Instead of hardcoded worker classes, workers are BPMN process definitions that can be monitored, scaled, and evolved like any other process.
+
+**Benefits**:
+- **Dynamic Creation**: DAS can create new worker processes overnight
+- **Unified Monitoring**: Worker health = Process health
+- **Process Composition**: Workers can call other worker processes
+- **Git Integration**: Pull worker scripts as process definitions
+
+#### 5.2.3 Digital Assistant System (DAS) - 24/7 Self-Improvement
+
+**Continuous Innovation Cycle**:
+```mermaid
+graph TB
+    subgraph "🧪 DAS Innovation Laboratory"
+        OBSERVE[Monitor Everything<br/>Usage patterns, performance, errors]
+        ANALYZE[Analyze Patterns<br/>Identify improvement opportunities]
+        EXPERIMENT[Build & Test<br/>Sandbox environment with real data]
+        VALIDATE[Validate Results<br/>Statistical significance testing]
+        SUGGEST[Suggest to Users<br/>Transparent benefits and rollback]
+        DEPLOY[Gradual Deployment<br/>Monitor adoption and performance]
+    end
+    
+    OBSERVE --> ANALYZE
+    ANALYZE --> EXPERIMENT
+    EXPERIMENT --> VALIDATE
+    VALIDATE --> SUGGEST
+    SUGGEST --> DEPLOY
+    DEPLOY --> OBSERVE
+    
+    classDef das fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    class OBSERVE,ANALYZE,EXPERIMENT,VALIDATE,SUGGEST,DEPLOY das
+```
+
+#### 5.2.4 Microkernel Component
 
 **Responsibilities:**
 - System bootstrap and initialization

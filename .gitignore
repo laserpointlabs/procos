@@ -102,3 +102,5 @@ procos_*.pid
 # Test outputs
 test_results/
 test_output/
+
+.timecfg

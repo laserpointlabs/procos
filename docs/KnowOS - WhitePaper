@@ -40,7 +40,7 @@ KnowOS is built on a microkernel foundation, emphasizing modularity, probabilist
 - **Digital Assistance System (DAS)**: The ambient intelligence core, integrated from startup. DAS monitors all activity via a vector store (e.g., Milvus or Pinecone), generates BPMN processes from user inputs (e.g., "Build a process to ingest data and train a model"), and refines them using pre-loaded a priori memory. It logs iterations, errors, and outcomes, enabling self-improvement and knowledge preservation.
 
 ```mermaid
-graph TD
+graph LR
     A[User] -->|Triggers Process| B(Process Definition <br> Server - API)
     B -->|Publishes Process| C(Microkernel) 
     C -->|Spawns| D(PDO: Process <br> Definition Orchestrator)
@@ -48,9 +48,10 @@ graph TD
     D -->|Spawns per Task| E(TDE: Task Definition <br> Executor)
     E -->|Executes Task with LLM/Tool| F(Vector Store)
     G(DAS: Ambient Intelligence) -->|Monitors & Generates| D
-    G -->|Triggers Process/<br>Montors & Generates|B
-    G -->|Monitors & Generates| E
-    G -->|Logs & Learns| F
+    G -.->|Triggers Process|B
+    G -->|Montors & Generates|B
+    G -.->|Monitors & Generates| E
+    G -.->|Logs & Learns| F
     F -->|Provides Context| G
     E -->|Reports Outcome| D
     D -->|Updates Process State| B

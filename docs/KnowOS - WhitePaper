@@ -81,96 +81,66 @@ The KnowOS execution flow follows a structured pattern:
 
 This architecture ensures isolation, scalability, and continuous learning while maintaining the flexibility of probabilistic execution combined with deterministic reliability.
 
-## Progressive Task Selection and Execution in KnowOS
+## How KnowOS Works: A Simple Example
 
-To illustrate how KnowOS executes BPMN processes through intelligent task selection, consider the following flow: A BPMN process is triggered, the microkernel spawns a PDO, and the PDO uses context-aware prompts to select and execute appropriate TDEs.
+Let's walk through a concrete example to see how KnowOS handles a real task: **"Process customer data and generate a report"**
 
-### BPMN Process Execution Flow
-
-```mermaid
-flowchart LR
-    BPMN[BPMN Process Triggered] --> MK[Microkernel Detects Process]
-    MK --> PDO[Spawns PDO for Process Instance]
-    PDO --> Context[PDO Gathers Context]
-    Context --> Decision{PDO Decision Point}
-    Decision -->|Choice A| TDE1[Spawns TDE: SQL Query]
-    Decision -->|Choice B| TDE2[Spawns TDE: ML Model]
-    Decision -->|Choice C| TDE3[Spawns TDE: Hybrid Processing]
-    TDE1 --> Results[Return Results to PDO]
-    TDE2 --> Results
-    TDE3 --> Results
-    Results --> Complete[Process Complete]
-```
-
-### Example BPMN Process: Data Processing Workflow
-
-Consider a data processing workflow where the PDO must intelligently route tasks:
+### The Complete Flow
 
 ```mermaid
 flowchart LR
-    Start([Start: Data Request]) --> Analyze{Analyze Data Type}
-    Analyze -->|Structured| SQL[Run SQL Query]
-    Analyze -->|Unstructured| ML[Apply ML Model]
-    Analyze -->|Mixed| Hybrid[Hybrid Processing]
-    SQL --> Validate[Validate Results]
-    ML --> Validate
-    Hybrid --> Validate
-    Validate --> End([End: Return Results])
+    User[User: Process customer data] --> PDS[Process Definition Server]
+    PDS --> MK[Microkernel detects new process]
+    MK --> PDO[Spawns PDO for this workflow]
+    
+    PDO --> Decision{What type of data?}
+    Decision -->|CSV files| TDE1[TDE: Parse CSV & analyze]
+    Decision -->|Database| TDE2[TDE: Run SQL queries]
+    Decision -->|Mixed sources| TDE3[TDE: Hybrid processing]
+    
+    TDE1 --> Report[Generate Report]
+    TDE2 --> Report
+    TDE3 --> Report
+    Report --> Done[Complete]
+    
+    DAS[DAS monitors everything] -.-> PDO
+    DAS -.-> TDE1
+    DAS -.-> TDE2
+    DAS -.-> TDE3
+    DAS -.-> VS[Vector Store: Learning & Context]
 ```
 
-In this workflow, the "Analyze Data Type" decision point is where the PDO uses intelligent prompts to determine the correct path based on incoming data context.
+### What Actually Happens
 
-### 1. Smart Prompt-Based Task Selection (PDO)
+1. **User Request**: "I need to process customer data and generate a report"
 
-```mermaid
-flowchart LR
-    subgraph PDO [PDO]
-        direction LR
-        Start([Start]) --> LLMTask{{LLM Task: Smart Prompt}}
-        LLMTask -->|Decision| Task[Selected Task]
-    end
-```
+2. **PDO Decision Making**: The PDO (which is itself a BPMN process) uses an LLM to analyze the situation:
+   ```
+   CONTEXT: Customer data processing request
+   DATA TYPES DETECTED: CSV files in /data/customers/
+   AVAILABLE TASKS: a) CSV parser, b) Database query, c) Hybrid approach
+   DECISION: a (CSV parser most appropriate)
+   ```
 
-*Example prompt template in PDO (following LLM best practices):*
-```
-You are a task selection agent in KnowOS. Your role is to analyze the current context and select the most appropriate next action.
-CONTEXT: {context}
+3. **TDE Execution**: The chosen TDE runs the actual work:
+   - Validates the CSV files
+   - Processes the data
+   - Generates the report
+   - Reports back to PDO
 
-AVAILABLE OPTIONS: a) {option_a}, b) {option_b} c) {option_c}
-OUTPUT FORMAT: Return only a single letter (a, b, or c) corresponding to your selected option.
-CONSTRAINTS: Do not provide explanations or additional text. Only return the letter.
-```
+4. **DAS Learning**: Throughout this process, DAS observes and learns:
+   - "CSV processing worked well for customer data"
+   - "This pattern took 3 minutes to complete"
+   - "User seemed satisfied with the output format"
 
-### 2. Tool Selection Within TDE
+### Key Insight
 
-```mermaid
-flowchart LR
-    subgraph TDE [TDE]
-        direction LR
-        TaskStart([Task Start]) --> ValidateInputs[Validate Inputs]
-        ValidateInputs --> TestPreconditions[Test Preconditions]
-        TestPreconditions --> Execute[Execute Task]
-        Execute --> ValidateResults[Validate Results]
-        ValidateResults --> LogErrors[Log Errors]
-        LogErrors --> TaskEnd([Task End])
-    end
-```
+**Everything is a BPMN process** - but they have different roles:
+- **User's workflow**: "Process customer data" (high-level business process)
+- **PDO**: "Orchestrate this workflow instance" (coordination process)  
+- **TDE**: "Parse CSV and generate report" (execution process)
 
-*Example prompt template for tool selection (TDE):*
-```
-You are a tool execution agent in KnowOS. Your role is to analyze the task requirements and select the most appropriate tool for execution.
-TASK CONTEXT: {task_context}
-
-AVAILABLE TOOLS: a) {tool_a}, b) {tool_b}, c) {tool_c}
-TASK REQUIREMENTS: {requirements}
-OUTPUT FORMAT: Return only a single letter (a, b, or c) corresponding to your selected tool.
-CONSTRAINTS: Base your decision on task requirements and tool capabilities. Only return the letter.
-```
-
-**Explanation:**
-- The PDO uses advanced, context-aware prompts to select the best task.
-- Each task is executed as a robust workflow, ensuring validation, testing, execution, result checking, and error logging.
-- This progressive approach allows for continuous improvement and error handling in KnowOS.
+The brilliance is that since everything is BPMN, users can visually edit any part of this flow without coding.
 
 ## Benefits
 

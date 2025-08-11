@@ -176,6 +176,168 @@ Deployment on AWS (via CDK) ensures scalability, with Amazon Q for architecture 
 
 KnowOS represents a paradigm shift in operating systems, transforming rigid kernels into evolvable, knowledge-driven platforms. By centering on BPMN processes, probabilistic execution, and DAS's ambient intelligence, it enables users to craft personalized OSes that reflect their expertise. This not only solves accessibility and efficiency issues but also unlocks new possibilities in collaborative computing. As domains like engineering and finance adopt KnowOS, it could foster a global knowledge grid, where processes become the universal language of innovation. For more details, visit KnowOS.ai or ProcOS.ai.
 
+## Appendix: Comprehensive Low-Level Process Library
+
+The following processes represent the foundational building blocks that DAS generates and maintains in KnowOS. Each process is modeled as a BPMN workflow, executable by TDEs with intelligent decision-making capabilities.
+
+### File Operations
+
+**Create File Process**
+- **Tasks**: Validate path → Check permissions → Validate content → Write data → Confirm write → Log operation
+- **TDE Capabilities**: LLM decisions for path validation, deterministic file I/O via Python/OS calls
+- **Example**: User says "Create a config file" → DAS generates this process → TDE executes with context-aware error handling
+
+**Read File Process**
+- **Tasks**: Validate path → Check file exists → Verify permissions → Read content → Parse/format → Return data
+- **TDE Capabilities**: Handle different file types (text, binary, JSON, CSV) with appropriate parsing
+
+**Update File Process**
+- **Tasks**: Validate target → Backup original → Lock file → Apply changes → Verify integrity → Release lock
+- **TDE Capabilities**: Supports append, replace, or patch operations with rollback on failure
+
+**Delete File Process**
+- **Tasks**: Validate path → Check dependencies → Create backup (optional) → Remove file → Verify deletion
+- **TDE Capabilities**: Smart dependency checking to prevent breaking system processes
+
+**Move/Copy File Process**
+- **Tasks**: Validate source → Validate destination → Check space → Execute transfer → Verify integrity → Cleanup
+- **TDE Capabilities**: Handle large files with progress monitoring and resume capability
+
+### Directory Operations
+
+**Create Directory Process**
+- **Tasks**: Validate path → Check parent exists → Verify permissions → Create directory → Set permissions → Log
+- **TDE Capabilities**: Recursive creation with intelligent permission inheritance
+
+**List Directory Contents Process**
+- **Tasks**: Validate path → Check permissions → Read directory → Filter results → Format output
+- **TDE Capabilities**: Smart filtering based on user context (hide system files, show only relevant types)
+
+**Delete Directory Process**
+- **Tasks**: Validate path → Check contents → Backup (optional) → Remove contents → Remove directory → Verify
+- **TDE Capabilities**: Safe removal with dependency analysis and recursive cleanup
+
+### LLM Memory & Context Operations
+
+**Create Context Window Process**
+- **Tasks**: Analyze task requirements → Gather relevant context → Build prompt context → Validate token limits → Cache context
+- **TDE Capabilities**: Intelligent context selection from vector store, token optimization, and context relevance scoring
+
+**Update Working Memory Process**
+- **Tasks**: Identify context changes → Merge new information → Prune outdated context → Rebalance priorities → Update cache
+- **TDE Capabilities**: Dynamic context management with semantic similarity and recency weighting
+
+**Retrieve Context Process**
+- **Tasks**: Parse query → Search vector store → Rank relevance → Assemble context → Format for LLM → Return context
+- **TDE Capabilities**: Semantic search with context-aware retrieval and prompt engineering optimization
+
+**Store Learning Process**
+- **Tasks**: Extract insights → Validate information → Determine storage strategy → Write to vector store → Update indices
+- **TDE Capabilities**: Automatic knowledge extraction with conflict resolution and knowledge graph updates
+
+**Context Cleanup Process**
+- **Tasks**: Identify stale context → Assess importance → Archive valuable insights → Clear working memory → Optimize storage
+- **TDE Capabilities**: Intelligent context lifecycle management with learning preservation
+
+### Graph Database Operations
+
+**Create Knowledge Node Process**
+- **Tasks**: Extract entity → Validate uniqueness → Define properties → Create node → Index relationships → Log creation
+- **TDE Capabilities**: Entity recognition with automatic property inference and duplicate detection
+
+**Update Knowledge Relationship Process**
+- **Tasks**: Identify entities → Validate relationship type → Check existing connections → Create/update edge → Weight relationship
+- **TDE Capabilities**: Relationship inference with strength scoring and temporal tracking
+
+**Query Knowledge Graph Process**
+- **Tasks**: Parse graph query → Traverse relationships → Rank paths → Aggregate results → Format response
+- **TDE Capabilities**: Intelligent graph traversal with relevance scoring and context-aware path finding
+
+**Merge Knowledge Entities Process**
+- **Tasks**: Identify duplicates → Compare properties → Merge relationships → Update references → Clean orphans
+- **TDE Capabilities**: Entity deduplication with relationship preservation and conflict resolution
+
+**Graph Schema Evolution Process**
+- **Tasks**: Detect new patterns → Propose schema changes → Validate consistency → Update structure → Migrate data
+- **TDE Capabilities**: Automatic schema adaptation with backward compatibility and data integrity
+
+**Relationship Inference Process**
+- **Tasks**: Analyze entity patterns → Identify implicit connections → Calculate relationship strength → Create derived edges → Validate inferences
+- **TDE Capabilities**: Machine learning-based relationship discovery with confidence scoring
+
+### Disk Operations
+
+**Write to Disk Process**
+- **Tasks**: Check space → Validate data → Choose location → Write block → Verify integrity → Update metadata
+- **TDE Capabilities**: Intelligent placement and error recovery with retry logic
+
+**Read from Disk Process**
+- **Tasks**: Validate request → Locate data → Read block → Verify checksum → Cache result → Return data
+- **TDE Capabilities**: Predictive caching and error correction
+
+**Check Disk Space Process**
+- **Tasks**: Query filesystem → Calculate usage → Predict trends → Format report → Cache results
+- **TDE Capabilities**: Intelligent reporting with usage forecasting and cleanup suggestions
+
+### Network Operations
+
+**Send API Request Process**
+- **Tasks**: Validate endpoint → Prepare headers → Serialize data → Send request → Handle response → Log transaction
+- **TDE Capabilities**: Automatic retry logic, authentication handling, and response validation
+
+**Receive API Response Process**
+- **Tasks**: Validate response → Check status → Parse data → Validate schema → Cache result → Return processed data
+- **TDE Capabilities**: Intelligent parsing with error recovery and data transformation
+
+**Open Connection Process**
+- **Tasks**: Resolve endpoint → Establish connection → Negotiate protocol → Authenticate → Test connectivity
+- **TDE Capabilities**: Protocol selection and automatic fallback mechanisms
+
+**Close Connection Process**
+- **Tasks**: Flush buffers → Send close signal → Wait for acknowledgment → Release resources → Log closure
+- **TDE Capabilities**: Graceful shutdown with data preservation
+
+### Process Management
+
+**Start Process Process**
+- **Tasks**: Validate executable → Check resources → Set environment → Launch process → Monitor startup → Register process
+- **TDE Capabilities**: Intelligent resource allocation and dependency injection
+
+**Terminate Process Process**
+- **Tasks**: Identify process → Check dependencies → Send termination signal → Wait for graceful exit → Force kill if needed → Cleanup
+- **TDE Capabilities**: Smart termination with dependency management and resource cleanup
+
+**Monitor Process Process**
+- **Tasks**: Identify process → Collect metrics → Analyze performance → Detect issues → Generate alerts → Log status
+- **TDE Capabilities**: Predictive monitoring with anomaly detection and automated remediation
+
+### System Queries
+
+**Check System Resources Process**
+- **Tasks**: Query CPU usage → Check memory → Monitor disk I/O → Network utilization → Generate report → Cache results
+- **TDE Capabilities**: Real-time monitoring with trend analysis and capacity planning
+
+**Get System Info Process**
+- **Tasks**: Query hardware → Check OS version → Get installed software → Network configuration → Format report
+- **TDE Capabilities**: Comprehensive system profiling with security-aware information gathering
+
+### Process Generation and Management
+
+Each of these processes is:
+1. **Generated by DAS** based on user input or system needs
+2. **Stored in the vector store** for reuse and refinement
+3. **Orchestrated by PDOs** when part of larger workflows
+4. **Executed by TDEs** with both probabilistic (LLM) and deterministic (tool) capabilities
+5. **Monitored and logged** for continuous improvement
+
+**Example Process Creation**:
+```
+User: "I need to save my analysis results"
+DAS: Generates "Create File Process" → PDO orchestrates → TDE executes with intelligent path selection and error handling
+```
+
+This library forms the foundation upon which users build domain-specific workflows, ensuring that KnowOS can handle everything from simple file operations to complex distributed system management.
+
 ## References
 
 - BPMN Specification (OMG, 2023)

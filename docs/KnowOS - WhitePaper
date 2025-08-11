@@ -67,7 +67,110 @@ graph TD
 
 ### Architectural Flow
 
-The system flow begins with a user triggering a BPMN process in the Process Definition Server (PDS). The microkernel detects it, spawns a PDO, which fetches tasks and creates TDEs. DAS oversees, generating or refining processes while logging to the vector store for contextual awareness.
+The KnowOS execution flow follows a structured pattern:
+
+1. **Process Initiation**: User triggers a BPMN process (via UI, API, or DAS-generated workflow) in the Process Definition Server (PDS)
+2. **Detection & Spawning**: Microkernel detects the new process execution and spawns a dedicated PDO for that process instance
+3. **Task Orchestration**: PDO queries PDS API for current process state and active tasks, then spawns TDEs dynamically for each ready task (supporting both sequential and parallel execution)
+4. **Task Execution**: Each TDE executes its assigned task using either:
+   - LLM-powered probabilistic decisions with context-managed prompts
+   - Deterministic tool calls (Python, MATLAB, Docker containers)
+5. **State Management**: TDEs report outcomes back to PDO; PDO updates process state in PDS
+6. **Ambient Intelligence**: DAS continuously monitors all activity via the vector store, logging iterations, errors, and outcomes for system learning and process optimization
+7. **Completion**: Process completes; PDO and TDEs terminate to conserve resources
+
+This architecture ensures isolation, scalability, and continuous learning while maintaining the flexibility of probabilistic execution combined with deterministic reliability.
+
+## Progressive Task Selection and Execution in KnowOS
+
+To illustrate how KnowOS executes BPMN processes through intelligent task selection, consider the following flow: A BPMN process is triggered, the microkernel spawns a PDO, and the PDO uses context-aware prompts to select and execute appropriate TDEs.
+
+### BPMN Process Execution Flow
+
+```mermaid
+flowchart LR
+    BPMN[BPMN Process Triggered] --> MK[Microkernel Detects Process]
+    MK --> PDO[Spawns PDO for Process Instance]
+    PDO --> Context[PDO Gathers Context]
+    Context --> Decision{PDO Decision Point}
+    Decision -->|Choice A| TDE1[Spawns TDE: SQL Query]
+    Decision -->|Choice B| TDE2[Spawns TDE: ML Model]
+    Decision -->|Choice C| TDE3[Spawns TDE: Hybrid Processing]
+    TDE1 --> Results[Return Results to PDO]
+    TDE2 --> Results
+    TDE3 --> Results
+    Results --> Complete[Process Complete]
+```
+
+### Example BPMN Process: Data Processing Workflow
+
+Consider a data processing workflow where the PDO must intelligently route tasks:
+
+```mermaid
+flowchart LR
+    Start([Start: Data Request]) --> Analyze{Analyze Data Type}
+    Analyze -->|Structured| SQL[Run SQL Query]
+    Analyze -->|Unstructured| ML[Apply ML Model]
+    Analyze -->|Mixed| Hybrid[Hybrid Processing]
+    SQL --> Validate[Validate Results]
+    ML --> Validate
+    Hybrid --> Validate
+    Validate --> End([End: Return Results])
+```
+
+In this workflow, the "Analyze Data Type" decision point is where the PDO uses intelligent prompts to determine the correct path based on incoming data context.
+
+### 1. Smart Prompt-Based Task Selection (PDO)
+
+```mermaid
+flowchart LR
+    subgraph PDO [PDO]
+        direction LR
+        Start([Start]) --> LLMTask{{LLM Task: Smart Prompt}}
+        LLMTask -->|Decision| Task[Selected Task]
+    end
+```
+
+*Example prompt template in PDO (following LLM best practices):*
+```
+You are a task selection agent in KnowOS. Your role is to analyze the current context and select the most appropriate next action.
+CONTEXT: {context}
+
+AVAILABLE OPTIONS: a) {option_a}, b) {option_b} c) {option_c}
+OUTPUT FORMAT: Return only a single letter (a, b, or c) corresponding to your selected option.
+CONSTRAINTS: Do not provide explanations or additional text. Only return the letter.
+```
+
+### 2. Tool Selection Within TDE
+
+```mermaid
+flowchart LR
+    subgraph TDE [TDE]
+        direction LR
+        TaskStart([Task Start]) --> ValidateInputs[Validate Inputs]
+        ValidateInputs --> TestPreconditions[Test Preconditions]
+        TestPreconditions --> Execute[Execute Task]
+        Execute --> ValidateResults[Validate Results]
+        ValidateResults --> LogErrors[Log Errors]
+        LogErrors --> TaskEnd([Task End])
+    end
+```
+
+*Example prompt template for tool selection (TDE):*
+```
+You are a tool execution agent in KnowOS. Your role is to analyze the task requirements and select the most appropriate tool for execution.
+TASK CONTEXT: {task_context}
+
+AVAILABLE TOOLS: a) {tool_a}, b) {tool_b}, c) {tool_c}
+TASK REQUIREMENTS: {requirements}
+OUTPUT FORMAT: Return only a single letter (a, b, or c) corresponding to your selected tool.
+CONSTRAINTS: Base your decision on task requirements and tool capabilities. Only return the letter.
+```
+
+**Explanation:**
+- The PDO uses advanced, context-aware prompts to select the best task.
+- Each task is executed as a robust workflow, ensuring validation, testing, execution, result checking, and error logging.
+- This progressive approach allows for continuous improvement and error handling in KnowOS.
 
 ## Benefits
 

@@ -75,6 +75,7 @@ VIEWER_HTML = """
     <!-- bpmn-js via UNPKG CDN -->
     <link rel="stylesheet" href="https://unpkg.com/bpmn-js@14.7.0/dist/assets/diagram-js.css" />
     <link rel="stylesheet" href="https://unpkg.com/bpmn-js@14.7.0/dist/assets/bpmn-font/css/bpmn.css" />
+    <script src="https://unpkg.com/bpmn-js@14.7.0/dist/bpmn-viewer.development.js"></script>
     <script src="https://unpkg.com/bpmn-js@14.7.0/dist/bpmn-modeler.development.js"></script>
   </head>
   <body>
@@ -88,7 +89,12 @@ VIEWER_HTML = """
         if (!res.ok) { document.body.innerHTML = '<p>Failed to fetch BPMN.</p>'; return; }
         const xml = await res.text();
 
-        const viewer = new BpmnJS({ container: '#canvas' });
+        const BpmnCtor = window.BpmnJS;
+        if (!BpmnCtor) {
+          document.body.innerHTML = '<p>Failed to load bpmn-js from CDN. If you are on WSL or a restricted network, allow <code>unpkg.com</code> or ask me to switch to a local copy.</p>';
+          return;
+        }
+        const viewer = new BpmnCtor({ container: '#canvas' });
         try {
           await viewer.importXML(xml);
           const canvas = viewer.get('canvas');

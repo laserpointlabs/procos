@@ -42,6 +42,13 @@ Note: Legacy external workers are transitioning into PDO/TDE BPMN-driven
 execution. Avoid adding new code under `src/workers/`; prefer BPMN tasks with
 deterministic adapters or probabilistic TDEs.
 
+## 🔍 Viewing BPMN Diagrams Locally
+
+```bash
+python3 scripts/bpmn_viewer.py
+# Open http://127.0.0.1:5001 and click a BPMN file to view
+```
+
 ## 📁 **Repository Structure**
 
 ```

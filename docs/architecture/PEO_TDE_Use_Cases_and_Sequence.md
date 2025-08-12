@@ -22,7 +22,7 @@ The design aligns with ProcOS principles in `docs/architecture/ProcOS_Architectu
 - **BPMN-first**: Behavior is defined in BPMN; code is limited to small, testable adapters (no imperative orchestration in code).
 - **PEO**: BPMN process that orchestrates a business or system scenario. It delegates work; it does not implement work.
 - **TDE Template (BPMN)**: BPMN subprocess (or called activity) that encapsulates a single task life-cycle (deterministic/probabilistic branches, retries, and governance).
-- **TDE Executor/Adapter (Code)**: Thin, testable shims used by TDE BPMN when deterministic actions are required (e.g., HTTP, file I/O). See `src/tde/tde_executor.py`.
+- **Script/External Task (BPMN)**: A BPMN script or external task used by the TDE template to invoke deterministic tools (HTTP, file I/O, shell, Scilab/Python runner), with no Python-side TDE runtime.
 - **Camunda Engine**: Provides stateful process execution, external task pattern, and history.
 - **Correlation ID**: End-to-end identifier that flows kernel → PEO → TDE → adapters → logs/metrics.
 
@@ -40,7 +40,7 @@ sequenceDiagram
     participant C as Camunda Engine
     participant P as PEO (BPMN)
     participant T as TDE Template (BPMN)
-    participant X as TDE Executor (Adapters)
+    participant X as Script/External Task
     participant S as External Systems/APIs
 
     U->>C: Start PEO process (key=domain_process)
@@ -52,7 +52,7 @@ sequenceDiagram
     C-->>T: Instantiate TDE subprocess (inherits correlationId)
 
     alt Deterministic Path
-        T->>X: Invoke adapter with inputs (toolSpec, context)
+        T->>X: Invoke script/external task with inputs (toolSpec, context)
         X->>S: Perform action (HTTP/file/shell/etc.)
         S-->>X: Result/response
         X-->>T: Deterministic outputs
@@ -106,11 +106,11 @@ sequenceDiagram
 5. Capture outputs and structured traces (decisions, tool calls, errors) into variables.
 6. On failure, raise BPMN error to PEO, or apply local retry per policy.
 
-### TDE Executor/Adapters — Code (see `src/tde/tde_executor.py`)
-1. Provide a thin interface with a spec (`TDESpec`) and two modes.
-2. Deterministic: Directly execute a single, testable action; return structured outputs.
-3. Probabilistic: Orchestrate a bounded analyze→act→evaluate loop; return outputs + reasoning trace.
-4. Never embed orchestration; return control to BPMN immediately after work.
+### Script/External Task — BPMN
+1. Encapsulate deterministic actions as BPMN script or external task steps.
+2. Deterministic: Execute a single action (HTTP/file/shell/Scilab/Python runner) and set process variables.
+3. Probabilistic: Optional tool calls can still be mediated via script/external tasks within the TDE loop.
+4. Do not embed orchestration; return control to the TDE BPMN immediately.
 
 ---
 
@@ -154,7 +154,7 @@ sequenceDiagram
 - The microkernel intentionally contains no imperative orchestration. See `_deploy_processes` and `_start_root_orchestrator` for bootstrap only.
 - Keep PEO BPMN definitions readable: gateways for rules, boundary events for errors, and call activities for TDE templates.
 - Keep adapters tiny and testable; avoid embedding orchestration or decision logic in code.
-- TDE spec example (code-side) is modeled in `src/tde/tde_executor.py` to keep the surface area minimal and explicit.
+- No Python TDE runtime is required; prefer BPMN script/external tasks. Add a small adapter library later only if needed for deterministic tools.
 
 ---
 

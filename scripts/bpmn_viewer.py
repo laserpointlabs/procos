@@ -80,9 +80,9 @@ VIEWER_HTML = """
       body { font-family: sans-serif; }
     </style>
     <!-- Local static assets fallback first, then CDN as backup -->
-    <link rel="stylesheet" href="/static_bpmn/diagram-js.css" />
-    <link rel="stylesheet" href="/static_bpmn/bpmn-font/css/bpmn.css" />
-    <script src="/static_bpmn/bpmn-viewer.js"></script>
+    <link rel="stylesheet" href="/static_bpmn/dist/diagram-js.css" />
+    <link rel="stylesheet" href="/static_bpmn/dist/bpmn-font/css/bpmn.css" />
+    <script src="/static_bpmn/dist/bpmn-viewer.js"></script>
     <script>
       if (!window.BpmnJS) {
         document.write('<script src="https://unpkg.com/bpmn-js@14.7.0/dist/bpmn-viewer.development.js"><\/script>');

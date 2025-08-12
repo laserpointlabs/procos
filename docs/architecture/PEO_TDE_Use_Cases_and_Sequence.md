@@ -25,6 +25,8 @@ The design aligns with ProcOS principles in `docs/architecture/ProcOS_Architectu
 - **Script/External Task (BPMN)**: A BPMN script or external task used by the TDE template to invoke deterministic tools (HTTP, file I/O, shell, Scilab/Python runner), with no Python-side TDE runtime.
 - **Camunda Engine**: Provides stateful process execution, external task pattern, and history.
 - **Correlation ID**: End-to-end identifier that flows kernel → PEO → TDE → adapters → logs/metrics.
+- **PDO (Process Definition Orchestrator)**: Deterministic orchestrator flavor of a process that routes purely by explicit rules. PDOs select TDEs based on task settings (e.g., `type: python|http|file`, `mode: deterministic`) without probabilistic decision-making.
+- **Probabilistic PEO**: A PEO that uses one or more LLM agents to select/sequence tasks based on context, team deliberation, or policies, while still keeping the orchestration itself in BPMN.
 
 ---
 
@@ -70,8 +72,33 @@ sequenceDiagram
     P->>P: Route via gateways (success/retry/compensate)
     P-->>C: Continue or complete PEO instance
 
-    Note over K,C: Kernel remains passive after bootstrap; monitoring only
+    Note over K,C: Kernel remains passive after bootstrap: monitoring only
 ```
+
+---
+
+## Variant: Probabilistic PEO Task Selection (LLM Team)
+
+In some flows, the PEO itself can use a probabilistic step to select the next task based on input context and team decisions. The orchestration remains BPMN-first; the decision-making is delegated to a script/external task that runs one or more LLM agents and returns a structured decision.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant P as PEO (BPMN)
+    participant L as LLM Team (Script/External)
+    participant T as TDE Template (BPMN)
+
+    P->>L: SelectNextTask(context, candidates)
+    L->>L: Reflect/Deliberate (single or team)
+    L-->>P: Decision(taskSpec, mode)
+    P->>T: Call Activity → TDE Template (taskSpec, mode)
+    T-->>P: Result variables
+    P->>P: Route next step or complete
+```
+
+Notes:
+- The PEO remains a BPMN orchestrator; probabilistic selection is a contained step.
+- Guardrails: iteration/time limits, structured outputs, and explainability artifacts.
 
 ---
 
@@ -97,6 +124,14 @@ sequenceDiagram
 4. Handle normal/exceptional outcomes through explicit BPMN boundary events.
 5. Apply compensation/rollback flows where required.
 6. Emit observability events to logs/metrics as variables or external tasks.
+7. Optional: Use probabilistic selection steps (single or team LLMs) to choose `taskSpec` based on context; enforce governance (limits, auditing, determinism toggles).
+
+### PDO (Process Definition Orchestrator) — Deterministic BPMN process
+1. Deterministically select TDE based on task settings (e.g., `type: python`, `mode: deterministic`).
+2. Maintain explicit routing tables or gateway rules; no probabilistic loops.
+3. Delegate to TDE Template and map inputs/outputs to process variables.
+4. Handle retries/compensations with BPMN boundary events and subprocesses.
+5. Emit governance and audit variables consistently with PEO/TDE conventions.
 
 ### TDE Template — BPMN subprocess for a single task
 1. Accept inputs: `taskSpec`, `mode` = `deterministic | probabilistic`, `correlationId`.
@@ -130,11 +165,17 @@ sequenceDiagram
 - **UC-4: Parallelization**
   - PEO spawns multiple TDE call activities (multi-instance) for fan-out; joins on completion; routes aggregate result.
 
+- **UC-5: Probabilistic PEO with LLM Team**
+  - PEO uses an LLM team step to select next `taskSpec` given ambiguous context; returns a structured decision with rationale; PEO calls TDE accordingly.
+
+- **UC-6: PDO Deterministic Routing**
+  - PDO reads task settings (e.g., `type:python`, `mode:deterministic`) and routes to a specific TDE template instance without any probabilistic components.
+
 ---
 
 ## Governance and Guardrails
 
-- Deterministic adapters must be idempotent where feasible; otherwise provide compensations.
+- Deterministic adapters must be idempotent (performing an operation more than once yields the same result) where feasible; otherwise provide compensations.
 - Probabilistic loops must enforce limits (iterations, time) and capture reasoning traces.
 - All paths must propagate `correlationId` and key variables for end-to-end auditing.
 - Errors should be explicit BPMN errors, not silent failures; prefer boundary events.
@@ -155,6 +196,7 @@ sequenceDiagram
 - Keep PEO BPMN definitions readable: gateways for rules, boundary events for errors, and call activities for TDE templates.
 - Keep adapters tiny and testable; avoid embedding orchestration or decision logic in code.
 - No Python TDE runtime is required; prefer BPMN script/external tasks. Add a small adapter library later only if needed for deterministic tools.
+- Both PEO and PDO are valid orchestrator flavors: choose PEO when probabilistic selection adds value; choose PDO when strict determinism and predictability are required.
 
 ---
 

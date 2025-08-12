@@ -75,7 +75,7 @@ VIEWER_HTML = """
     <!-- bpmn-js via UNPKG CDN -->
     <link rel="stylesheet" href="https://unpkg.com/bpmn-js@14.7.0/dist/assets/diagram-js.css" />
     <link rel="stylesheet" href="https://unpkg.com/bpmn-js@14.7.0/dist/assets/bpmn-font/css/bpmn.css" />
-    <script src="https://unpkg.com/bpmn-js@14.7.0/dist/bpmn-viewer.development.js"></script>
+    <script src="https://unpkg.com/bpmn-js@14.7.0/dist/bpmn-modeler.development.js"></script>
   </head>
   <body>
     <div id="canvas"></div>

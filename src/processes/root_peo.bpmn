@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
   id="Definitions_ProcOS_RootPEO" targetNamespace="http://procos/peo">
-  <bpmn:process id="system_orchestrator" name="System Orchestrator (Root PEO)">
+  <bpmn:process id="system_orchestrator" name="System Orchestrator (Root PEO)" isExecutable="true">
     <bpmn:startEvent id="Start" name="Start" />
     <bpmn:task id="InitEnv" name="Initialize Environment" />
     <bpmn:callActivity id="PreloadKnowledge" name="Load Knowledge" calledElement="knowledge_preload" />
@@ -14,7 +17,7 @@
     <bpmn:sequenceFlow id="f4" sourceRef="EnableGeneration" targetRef="Idle" />
   </bpmn:process>
   
-  <bpmn:process id="knowledge_preload" name="Knowledge Preload (Stub)">
+  <bpmn:process id="knowledge_preload" name="Knowledge Preload (Stub)" isExecutable="true">
     <bpmn:startEvent id="KStart" />
     <bpmn:task id="ScanSources" name="Scan Sources" />
     <bpmn:task id="EmbedStore" name="Embed and Store" />
@@ -24,5 +27,70 @@
     <bpmn:sequenceFlow id="kf2" sourceRef="ScanSources" targetRef="EmbedStore" />
     <bpmn:sequenceFlow id="kf3" sourceRef="EmbedStore" targetRef="KEnd" />
   </bpmn:process>
-</bpmn:definitions>
 
+  <!-- Basic diagram layout for quick viewing -->
+  <bpmndi:BPMNDiagram id="Diag_RootPEO">
+    <bpmndi:BPMNPlane id="Plane_system_orchestrator" bpmnElement="system_orchestrator">
+      <bpmndi:BPMNShape id="Start_di" bpmnElement="Start">
+        <dc:Bounds x="120" y="100" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="InitEnv_di" bpmnElement="InitEnv">
+        <dc:Bounds x="200" y="80" width="140" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="PreloadKnowledge_di" bpmnElement="PreloadKnowledge">
+        <dc:Bounds x="370" y="80" width="160" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EnableGeneration_di" bpmnElement="EnableGeneration">
+        <dc:Bounds x="560" y="80" width="160" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Idle_di" bpmnElement="Idle">
+        <dc:Bounds x="760" y="100" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="f1_di" bpmnElement="f1">
+        <di:waypoint x="156" y="118" />
+        <di:waypoint x="200" y="118" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="f2_di" bpmnElement="f2">
+        <di:waypoint x="340" y="118" />
+        <di:waypoint x="370" y="118" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="f3_di" bpmnElement="f3">
+        <di:waypoint x="530" y="118" />
+        <di:waypoint x="560" y="118" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="f4_di" bpmnElement="f4">
+        <di:waypoint x="720" y="118" />
+        <di:waypoint x="760" y="118" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+  <bpmndi:BPMNDiagram id="Diag_KnowledgePreload">
+    <bpmndi:BPMNPlane id="Plane_knowledge_preload" bpmnElement="knowledge_preload">
+      <bpmndi:BPMNShape id="KStart_di" bpmnElement="KStart">
+        <dc:Bounds x="120" y="260" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ScanSources_di" bpmnElement="ScanSources">
+        <dc:Bounds x="200" y="240" width="140" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EmbedStore_di" bpmnElement="EmbedStore">
+        <dc:Bounds x="370" y="240" width="160" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="KEnd_di" bpmnElement="KEnd">
+        <dc:Bounds x="560" y="260" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="kf1_di" bpmnElement="kf1">
+        <di:waypoint x="156" y="278" />
+        <di:waypoint x="200" y="278" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="kf2_di" bpmnElement="kf2">
+        <di:waypoint x="340" y="278" />
+        <di:waypoint x="370" y="278" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="kf3_di" bpmnElement="kf3">
+        <di:waypoint x="530" y="278" />
+        <di:waypoint x="560" y="278" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

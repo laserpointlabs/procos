@@ -34,9 +34,11 @@ class HealthChecker:
     def check_camunda(self) -> Tuple[bool, str, Dict]:
         """Check Camunda engine health"""
         try:
+            camunda_base = os.getenv('CAMUNDA_BASE_URL', 'http://localhost:8080')
+            api = f"{camunda_base}/engine-rest"
             # Check engine status
             response = requests.get(
-                'http://localhost:8080/engine-rest/engine',
+                f'{api}/engine',
                 timeout=10
             )
             
@@ -46,20 +48,14 @@ class HealthChecker:
                     engine_name = engines[0].get('name', 'default')
                     
                     # Check version info
-                    version_response = requests.get(
-                        'http://localhost:8080/engine-rest/version',
-                        timeout=5
-                    )
+                    version_response = requests.get(f'{api}/version', timeout=5)
                     
                     version_info = {}
                     if version_response.status_code == 200:
                         version_info = version_response.json()
                     
                     # Check process definitions
-                    processes_response = requests.get(
-                        'http://localhost:8080/engine-rest/process-definition',
-                        timeout=5
-                    )
+                    processes_response = requests.get(f'{api}/process-definition', timeout=5)
                     
                     process_count = 0
                     if processes_response.status_code == 200:
@@ -69,7 +65,7 @@ class HealthChecker:
                         'engine_name': engine_name,
                         'version': version_info.get('version', 'unknown'),
                         'process_definitions': process_count,
-                        'url': 'http://localhost:8080/camunda'
+                        'url': f'{camunda_base}/camunda'
                     }
                     
                     return True, f"Engine '{engine_name}' running", details

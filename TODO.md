@@ -47,6 +47,12 @@ Directory: `src/processes/`
 - [ ] BPMN metadata convention doc (name, version, intent, domain, created_by, validation_hash)
 - [ ] Basic BPMN linter checklist (manual initially)
 
+### New: Core Tool Execution (P0)
+- [ ] `tool_task.bpmn` — deterministic tool invocation (Python/Scilab) via TDE adapter (walking skeleton)
+- [ ] Implement minimal `ToolRunner` under `src/tools/` with `run_python_script(path,args)` and stub `run_scilab_script(path,args)`
+- [ ] Wire TDE deterministic path to call `ToolRunner` when `inputs.tool` is provided
+- [ ] Add a sample Python tool script and BPMN that invokes it end-to-end
+
 ---
 ## 4. DAS Core (P0/P1)
 Create `src/das/` structure.

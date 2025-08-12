@@ -2,9 +2,9 @@
 """
 TDE Executor (stub)
 
-Provides a light abstraction for running a single task instance as described in
-its BPMN definition. The real execution logic should live in BPMN + external
-scripts; this class wraps deterministic adapters and LLM calls as needed.
+Provides a very light stub for deterministic/probabilistic modes. In the target
+architecture, the real execution path is driven by BPMN (call activities,
+script/external tasks). Use TDE adapters only for thin, testable shims.
 """
 
 from __future__ import annotations

@@ -142,8 +142,9 @@ class ProcOSKernel:
             if self.config.auto_deploy:
                 self._deploy_processes()
             
-            # Phase 4: Start root orchestrator process
-            self._start_root_orchestrator()
+        # Phase 4: Optionally start root PEO instance (BPMN-first orchestration)
+        # Keep minimal: OK if not present; PEO BPMN can be started externally.
+        self._start_root_orchestrator()
             
             # Phase 5: Enter monitoring mode
             self.startup_time = time.time()

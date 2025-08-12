@@ -1122,3 +1122,716 @@ The system still achieves true recursion and self-modification, but it does so f
 - Begin knowledge-driven self-improvement
 
 This approach transforms the mind-bending recursion problem into a manageable, knowledge-driven evolution process.
+
+## The Domain Specialization Vision: KnowOS as a Replicable Platform
+
+**Key Insight**: Once we master growing DAS and the generic process-driven system, we can **replicate and specialize** it into domain-specific operating systems.
+
+### The Franchise Model
+
+Rather than building one massive general-purpose KnowOS that tries to do everything, we create:
+
+```mermaid
+flowchart TD
+    Core[Core KnowOS/DAS Platform] --> Replicate[Replication Process]
+    Replicate --> Blender[BlenderOS: Blender Design System]
+    Replicate --> Aircraft[AircraftOS: Aerospace Design System]
+    Replicate --> Motor[MotorOS: Brushless DC Motor System]
+    Replicate --> Control[ControlOS: Control System Design]
+    Replicate --> Medical[MedicalOS: Medical Device System]
+    Replicate --> Finance[FinanceOS: Trading System]
+    
+    Core -.->|"Shared updates"| Blender
+    Core -.->|"Shared updates"| Aircraft
+    Core -.->|"Shared updates"| Motor
+```
+
+### Domain-Specific KnowOS Examples
+
+#### BlenderOS: The Blender Design Operating System
+```yaml
+specialization:
+  domain: "Blender design and engineering"
+  purpose: "Conceptualize, design, and develop blenders"
+  
+a_priori_knowledge:
+  - "500+ blender design processes"
+  - "Motor selection and sizing workflows"
+  - "Blade geometry optimization processes"
+  - "Safety testing and certification workflows"
+  - "Manufacturing and assembly processes"
+  - "Cost optimization and BOM management"
+  
+specialized_processes:
+  - "Analyze blending requirements → Select motor specs"
+  - "Design blade geometry → CFD simulation → Optimization"
+  - "Create housing design → Material selection → Prototyping"
+  - "Safety analysis → UL certification → Production readiness"
+  
+domain_experts:
+  - "Mechanical engineers specializing in small appliances"
+  - "CFD simulation experts for fluid dynamics"
+  - "Manufacturing engineers for injection molding"
+  - "Safety certification specialists"
+```
+
+#### AircraftOS: The Aerospace Design Operating System
+```yaml
+specialization:
+  domain: "Aircraft design and engineering" 
+  purpose: "Design, analyze, and certify aircraft systems"
+  
+a_priori_knowledge:
+  - "Aerodynamics simulation processes"
+  - "Structural analysis workflows"
+  - "Flight control system design"
+  - "FAA certification processes"
+  - "Manufacturing and assembly procedures"
+  
+specialized_processes:
+  - "Requirements analysis → Conceptual design → Detailed design"
+  - "Aerodynamic modeling → CFD analysis → Wind tunnel validation"
+  - "Structural design → FEA analysis → Load testing"
+  - "Control system design → Simulation → Flight testing"
+  
+domain_experts:
+  - "Aerospace engineers"
+  - "Flight test engineers" 
+  - "Certification specialists"
+  - "Manufacturing engineers"
+```
+
+#### MotorOS: The Brushless DC Motor Design System
+```yaml
+specialization:
+  domain: "Brushless DC motor design"
+  purpose: "Design, optimize, and manufacture BLDC motors"
+  
+a_priori_knowledge:
+  - "Electromagnetic field analysis processes"
+  - "Rotor and stator design workflows"
+  - "Control algorithm development"
+  - "Thermal management processes"
+  - "Manufacturing and testing procedures"
+  
+specialized_processes:
+  - "Performance requirements → Magnetic circuit design"
+  - "Winding design → Electromagnetic simulation → Optimization"
+  - "Control algorithm → Simulation → Hardware testing"
+  - "Thermal analysis → Cooling system design"
+```
+
+### The Replication Strategy
+
+#### 1. Core Platform Development
+```yaml
+core_capabilities:
+  - "Generic DAS with learning and evolution"
+  - "BPMN process generation and management"
+  - "Vector store and graph database infrastructure"
+  - "TDE and PDO orchestration system"
+  - "Community script management"
+  
+replication_tools:
+  - "Domain knowledge import tools"
+  - "Specialization configuration system"
+  - "Domain expert onboarding processes"
+  - "Knowledge base seeding utilities"
+```
+
+#### 2. Domain Specialization Process
+```yaml
+specialization_workflow:
+  1. "Identify domain (e.g., blender design)"
+  2. "Recruit domain experts"
+  3. "Collect domain-specific knowledge"
+  4. "Create specialized a priori knowledge base"
+  5. "Configure domain-specific processes"
+  6. "Train domain-specific DAS"
+  7. "Deploy specialized KnowOS"
+  8. "Enable domain community"
+```
+
+#### 3. Business Model Implications
+```yaml
+centralized_control:
+  - "Core platform maintained by you/open source community"
+  - "Platform updates propagate to all domains"
+  - "Security and infrastructure managed centrally"
+  
+domain_autonomy:
+  - "Each domain KnowOS operates independently"
+  - "Domain experts control their specialized knowledge"
+  - "Domain-specific processes and workflows"
+  - "Specialized user interfaces and tools"
+  
+revenue_models:
+  - "Platform licensing for commercial domains"
+  - "Support and consulting for specialization"
+  - "Marketplace for domain knowledge and processes"
+  - "Premium features for enterprise domains"
+```
+
+### Engaging Domain Experts: The "No UI" Challenge
+
+**The Core Problem**: How do you get blender designers involved when they don't think in terms of BPMN processes or traditional software UIs?
+
+**The Solution**: Meet domain experts where they are, in their natural workflow environment.
+
+#### Strategy 1: Knowledge Extraction Sessions
+
+**Instead of asking blender designers to learn BPMN, extract their knowledge naturally:**
+
+```yaml
+knowledge_extraction_approach:
+  format: "Collaborative design sessions"
+  setting: "In their existing CAD/design environment"
+  method: "Watch, learn, document their actual workflow"
+  
+example_session:
+  scenario: "Design a new blender for smoothies"
+  participants: 
+    - "Experienced blender designer (domain expert)"
+    - "KnowOS knowledge engineer (translator)"
+    - "Optional: Product manager"
+  
+  process:
+    1. "Designer walks through their normal design process"
+    2. "Knowledge engineer observes and asks clarifying questions"
+    3. "Record decision points, tools used, validation steps"
+    4. "Document the 'why' behind each step"
+    5. "Capture failure modes and troubleshooting approaches"
+  
+  output:
+    - "Natural language workflow descriptions"
+    - "Decision criteria and rules of thumb"
+    - "Tool integration points"
+    - "Quality gates and validation steps"
+```
+
+#### Strategy 2: Domain-Native Interfaces
+
+**Create interfaces that speak the domain expert's language:**
+
+```yaml
+blender_designer_interface:
+  looks_like: "CAD plugin or Excel spreadsheet"
+  feels_like: "Familiar engineering tool"
+  actually_is: "KnowOS process definition interface"
+  
+  example_workflow_capture:
+    title: "Blender Design Checklist Builder"
+    format: |
+      ┌─ New Blender Design Process ─────────────────┐
+      │                                              │
+      │ 1. ☐ Define target capacity (oz): _____      │
+      │ 2. ☐ Select motor power requirements         │
+      │     → If smoothies: ≥ 1000W                 │
+      │     → If ice crushing: ≥ 1500W              │
+      │ 3. ☐ Design blade geometry                   │
+      │     → Run CFD simulation                     │
+      │     → Validate mixing efficiency ≥ 95%      │
+      │ 4. ☐ Housing design and material selection   │
+      │     → Check FDA food safety requirements     │
+      │ 5. ☐ Safety analysis                         │
+      │     → UL certification requirements          │
+      │                                              │
+      │ [Save as Process] [Test Workflow]            │
+      └──────────────────────────────────────────────┘
+  
+  behind_the_scenes: "This familiar interface generates BPMN processes automatically"
+```
+
+#### Strategy 3: Reverse Engineering Existing Workflows
+
+**Study how domain experts already work and codify it:**
+
+```yaml
+workflow_reverse_engineering:
+  approach: "Shadow experts doing real work"
+  tools: "Screen recording, interviews, document analysis"
+  
+  blender_design_example:
+    observe: 
+      - "How they use SolidWorks for 3D modeling"
+      - "CFD simulation setup and analysis"
+      - "Material selection databases they consult"
+      - "Safety standard documents they reference"
+      - "Testing procedures they follow"
+    
+    document:
+      - "Sequence of tools and decisions"
+      - "Information sources and references"
+      - "Quality checkpoints and validation"
+      - "Common problems and solutions"
+    
+    translate_to_knowos:
+      - "Each tool becomes a script task"
+      - "Decision points become BPMN gateways"
+      - "Quality checks become validation processes"
+      - "The entire workflow becomes a reusable process"
+```
+
+#### Strategy 4: Incremental Value Delivery
+
+**Start with immediate value, grow into full KnowOS:**
+
+```yaml
+incremental_approach:
+  phase_1: "Smart checklists and templates"
+    value: "Standardize and improve existing workflows"
+    example: "Automated blender design checklist with smart defaults"
+  
+  phase_2: "Workflow automation"
+    value: "Automate repetitive tasks and calculations"
+    example: "Auto-generate CFD setup from design parameters"
+  
+  phase_3: "Intelligent suggestions"
+    value: "AI-powered design recommendations"
+    example: "Suggest motor specs based on capacity and use case"
+  
+  phase_4: "Full process orchestration"
+    value: "Complete design-to-manufacturing workflow"
+    example: "End-to-end blender development process"
+```
+
+#### Strategy 5: Domain Expert Champions
+
+**Find and cultivate domain expert advocates:**
+
+```yaml
+champion_strategy:
+  identify: "Progressive experts who are technology-curious"
+  characteristics:
+    - "Experienced in their domain"
+    - "Frustrated with current tools/processes" 
+    - "Open to new approaches"
+    - "Influential in their community"
+  
+  engagement_approach:
+    1. "Solve a real pain point for them"
+    2. "Show immediate value without complexity"
+    3. "Let them contribute in their natural way"
+    4. "Make them heroes in their domain community"
+  
+  blender_designer_champion_example:
+    pain_point: "Motor selection is always trial-and-error"
+    solution: "Smart motor recommendation process"
+    value: "Reduces design iterations by 60%"
+    result: "Champion evangelizes to other designers"
+```
+
+#### Strategy 6: Translation Layer
+
+**Create a translation layer between domain experts and KnowOS:**
+
+```yaml
+translation_layer:
+  role: "Knowledge engineers who understand both domains"
+  skills:
+    - "Domain knowledge (blender design)"
+    - "KnowOS/BPMN expertise" 
+    - "Process analysis and documentation"
+  
+  workflow:
+    1. "Meet with domain expert in their environment"
+    2. "Observe and document their natural process"
+    3. "Translate to BPMN and script tasks"
+    4. "Validate translation with domain expert"
+    5. "Deploy and refine based on feedback"
+  
+  example_translation:
+    domain_expert_says: "First I check if the capacity makes sense for the motor size"
+    translation_creates: |
+      <bpmn:task id="validate_capacity_motor" name="Validate Capacity-Motor Relationship">
+        <bpmn:script>
+          # Check if motor power is appropriate for container capacity
+          if capacity_oz <= 32 and motor_watts < 600:
+              return {"status": "warning", "message": "Motor may be underpowered"}
+          elif capacity_oz > 64 and motor_watts < 1200:
+              return {"status": "error", "message": "Motor insufficient for large capacity"}
+          else:
+              return {"status": "ok"}
+        </bpmn:script>
+      </bpmn:task>
+```
+
+#### The Key Insight: Domain Experts Don't Need to Understand KnowOS
+
+**They just need to see value in their own language:**
+
+- **Blender designers** see better design workflows and fewer iterations
+- **KnowOS** gets domain expertise encoded as processes
+- **Translation layer** handles the complexity
+- **Everyone wins** without anyone leaving their comfort zone
+
+**Implementation Priority:**
+1. Find domain expert champions with real pain points
+2. Solve their immediate problems with simple tools
+3. Gradually expand into more sophisticated workflows
+4. Let success stories attract more domain experts
+5. Build community around domain-specific value
+
+This approach turns the "no UI" challenge into an advantage - domain experts contribute in their natural environment, and KnowOS adapts to them rather than forcing them to adapt to it.
+
+### The Network Effect
+
+#### Inter-Domain Learning
+```yaml
+knowledge_sharing:
+  - "Generic engineering processes shared across domains"
+  - "Safety and certification patterns reused"
+  - "Manufacturing workflows adapted for different products"
+  - "Testing and validation processes cross-pollinate"
+  
+examples:
+  - "CFD simulation processes: BlenderOS → AircraftOS → MotorOS"
+  - "Safety testing workflows: Any consumer product domain"
+  - "Cost optimization: Manufacturing-focused domains"
+  - "Control system design: MotorOS → AircraftOS → RoboticsOS"
+```
+
+#### Ecosystem Evolution
+```mermaid
+flowchart LR
+    Start[Core KnowOS Platform] --> Domain1[BlenderOS]
+    Start --> Domain2[AircraftOS] 
+    Start --> Domain3[MotorOS]
+    
+    Domain1 --> Learn1[Blender Design Knowledge]
+    Domain2 --> Learn2[Aerospace Knowledge]
+    Domain3 --> Learn3[Motor Design Knowledge]
+    
+    Learn1 --> Generic[Generic Engineering Patterns]
+    Learn2 --> Generic
+    Learn3 --> Generic
+    
+    Generic --> Improve[Improved Core Platform]
+    Improve --> NextGen[Next Generation Domains]
+```
+
+### Benefits of Domain Specialization
+
+#### 1. **Focused Excellence**
+- Each KnowOS becomes world-class in its specific domain
+- Deep specialization rather than shallow generalization
+- Domain experts can contribute without learning general computing
+
+#### 2. **Rapid Market Entry**
+- Specialists can quickly deploy domain-specific systems
+- No need to build general OS from scratch
+- Focus on domain knowledge, not infrastructure
+
+#### 3. **Community Building**
+- Domain-specific communities form around each KnowOS
+- Experts share knowledge within their field
+- Collaborative improvement of domain processes
+
+#### 4. **Commercial Viability**
+- Clear value proposition for specific industries
+- Easier to price and sell domain-specific solutions
+- Specialists can become domain KnowOS providers
+
+### Implementation Path
+
+#### Phase 1: Perfect the Core (Current Focus)
+- Build robust DAS and generic KnowOS
+- Prove the recursive self-improvement
+- Establish replication methodology
+
+#### Phase 2: First Domain Specialization
+- Choose initial domain (maybe one you're expert in)
+- Recruit domain experts
+- Build first specialized KnowOS
+- Prove the specialization model
+
+#### Phase 3: Platform Scaling
+- Develop replication tools and processes
+- Enable other specialists to create domain KnowOS
+- Build marketplace and community
+- Scale the franchise model
+
+### The Vision Realized
+
+**Instead of**: One massive, complex, general-purpose operating system that tries to do everything
+
+**We get**: A **constellation of specialized operating systems**, each world-class in its domain, but all built on the same proven, evolvable platform
+
+**Each domain KnowOS becomes**:
+- A **conceptualizer** for that domain's problems
+- A **developer** of domain-specific solutions  
+- A **knowledge repository** for that field
+- A **community platform** for domain experts
+
+This transforms KnowOS from a single system into a **platform for creating intelligent, domain-specific operating systems** - much more powerful and commercially viable.
+
+## Appendix A: UI as Process and True Expert Systems
+
+### The Expert System Holy Grail
+
+**What we've been trying to build for decades**: True Expert Systems that capture how humans actually work.
+
+**The Traditional Failure**: Static databases, rule engines, and knowledge bases that don't reflect how experts actually think and work.
+
+**The KnowOS Breakthrough**: Experts work as processes, not static rules. Capture their knowledge as executable workflows.
+
+### The Traditional Expert System Problem
+
+```yaml
+traditional_expert_systems:
+  approach: "Extract rules and store in databases"
+  format: "IF-THEN rules and decision trees"
+  problems:
+    - "Static knowledge that doesn't evolve"
+    - "Rules don't capture workflow context"
+    - "Difficult to maintain and update"
+    - "Doesn't reflect how experts actually work"
+    - "Limited to narrow, well-defined domains"
+  
+  example_traditional_rule:
+    rule: "IF motor_power < 1000W AND capacity > 48oz THEN flag_warning"
+    problems:
+      - "Doesn't capture WHY this matters"
+      - "Doesn't show the design process context"
+      - "Can't evolve based on new experience"
+      - "Doesn't integrate with actual design workflow"
+```
+
+### The KnowOS Expert System Revolution
+
+**Key Insight**: Experts don't work with static rules - they follow dynamic processes that adapt based on context.
+
+```yaml
+knowos_expert_systems:
+  approach: "Capture expert workflows as executable processes"
+  format: "BPMN processes with embedded domain knowledge"
+  advantages:
+    - "Dynamic processes that evolve with experience"
+    - "Captures workflow context and decision points"
+    - "Self-improving through execution feedback"
+    - "Reflects how experts actually work"
+    - "Integrates naturally with existing tools"
+  
+  example_process_knowledge:
+    process: "Motor Selection and Validation Process"
+    captures:
+      - "Sequence of analysis steps experts follow"
+      - "Decision criteria at each step"
+      - "Tools and resources experts consult"
+      - "Validation and testing procedures"
+      - "Common failure modes and solutions"
+      - "Continuous improvement based on outcomes"
+```
+
+### UI as Process: The Final Piece
+
+**The Traditional UI Problem**: Static interfaces that don't adapt to user expertise or context.
+
+**The Process UI Solution**: UIs that are generated and evolved as processes, adapting to persona and task.
+
+#### Dynamic UI Generation Process
+
+```xml
+<bpmn:process id="generate_ui_for_expert" name="Generate Expert-Specific UI">
+  
+  <bpmn:startEvent id="ui_request" name="Expert Needs Interface"/>
+  
+  <bpmn:task id="analyze_expert_profile" name="Analyze Expert Profile">
+    <bpmn:documentation>
+      Analyze expert's domain, experience level, preferred tools, and current task
+    </bpmn:documentation>
+    <bpmn:script>
+      expert_profile = analyze_user_context(user_id)
+      task_context = extract_current_task(user_request)
+      preferred_patterns = get_ui_preferences(expert_profile)
+      return {"profile": expert_profile, "task": task_context, "patterns": preferred_patterns}
+    </bpmn:script>
+  </bpmn:task>
+  
+  <bpmn:task id="select_ui_components" name="Select Appropriate UI Components">
+    <bpmn:script>
+      # Search UI component library for expert's domain and task
+      relevant_components = vector_search_ui_components(
+          domain=expert_profile['domain'],
+          task_type=task_context['type'],
+          expertise_level=expert_profile['level']
+      )
+      
+      # Select components that match expert's workflow
+      selected_components = filter_by_workflow_compatibility(relevant_components)
+      return {"components": selected_components}
+    </bpmn:script>
+  </bpmn:task>
+  
+  <bpmn:task id="generate_ui_process" name="Generate UI Interaction Process">
+    <bpmn:script>
+      # Create BPMN process that defines UI behavior
+      ui_process = generate_ui_interaction_process(
+          components=selected_components,
+          expert_workflow=expert_profile['typical_workflow'],
+          task_requirements=task_context['requirements']
+      )
+      
+      # Embed domain knowledge into UI process
+      enhanced_ui_process = embed_domain_knowledge(ui_process, expert_profile['domain'])
+      return {"ui_process": enhanced_ui_process}
+    </bpmn:script>
+  </bpmn:task>
+  
+  <bpmn:task id="deploy_dynamic_ui" name="Deploy Dynamic UI">
+    <bpmn:script>
+      # Deploy UI as executable process
+      ui_instance_id = deploy_ui_process(enhanced_ui_process)
+      
+      # Monitor UI effectiveness
+      setup_ui_monitoring(ui_instance_id, expert_profile)
+      
+      return {"ui_deployed": True, "ui_id": ui_instance_id}
+    </bpmn:script>
+  </bpmn:task>
+  
+  <bpmn:endEvent id="ui_active" name="Expert UI Active"/>
+  
+</bpmn:process>
+```
+
+#### UI Process A Priori Knowledge
+
+```yaml
+ui_component_library:
+  engineering_interfaces:
+    - name: "CAD Parameter Input"
+      pattern: "Smart form with real-time validation"
+      domains: ["mechanical_design", "aerospace", "automotive"]
+      validation_rules: "Domain-specific engineering constraints"
+    
+    - name: "Simulation Launcher"
+      pattern: "One-click simulation with progress tracking"
+      domains: ["CFD", "FEA", "thermal_analysis"]
+      integration: "Connects to simulation tools via API"
+    
+    - name: "Design Review Workflow"
+      pattern: "Collaborative review with approval gates"
+      domains: ["all_engineering"]
+      process: "Automated routing based on design complexity"
+  
+  business_interfaces:
+    - name: "Financial Dashboard"
+      pattern: "Real-time data with drill-down capability"
+      domains: ["trading", "accounting", "investment"]
+      data_sources: "Market feeds, accounting systems, portfolios"
+    
+    - name: "Approval Workflow UI"
+      pattern: "Task-based interface with notification system"
+      domains: ["procurement", "HR", "finance"]
+      routing: "Role-based approval chains"
+```
+
+### The Recursive Expert System
+
+**The Ultimate Vision**: Expert systems that capture, generate, and evolve both domain knowledge AND the interfaces to access that knowledge.
+
+```mermaid
+flowchart LR
+    Expert[Domain Expert] --> Knowledge[Contributes Process Knowledge]
+    Knowledge --> DAS[DAS Learns Expert Workflows]
+    DAS --> Processes[Generates New Processes]
+    DAS --> UIs[Generates Expert-Specific UIs]
+    
+    Processes --> Execution[Process Execution]
+    UIs --> Interaction[Expert Interaction]
+    
+    Execution --> Learning[System Learning]
+    Interaction --> Learning
+    
+    Learning --> Improvement[Knowledge Improvement]
+    Improvement --> DAS
+    
+    subgraph "Self-Improving Expert System"
+        DAS
+        Processes
+        UIs
+        Learning
+        Improvement
+    end
+```
+
+### Why This Changes Everything
+
+#### 1. **True Knowledge Capture**
+- **Traditional**: Static rules disconnected from workflow
+- **KnowOS**: Dynamic processes that reflect how experts actually work
+
+#### 2. **Adaptive Interfaces**  
+- **Traditional**: One-size-fits-all interfaces
+- **KnowOS**: Generated UIs that adapt to expert expertise and task
+
+#### 3. **Continuous Evolution**
+- **Traditional**: Knowledge bases that decay over time
+- **KnowOS**: Systems that improve through use and expert feedback
+
+#### 4. **Natural Integration**
+- **Traditional**: Experts must learn new systems
+- **KnowOS**: Systems adapt to how experts already work
+
+### Implementation Strategy for Expert Systems
+
+#### Phase 1: Domain Knowledge Extraction
+```yaml
+approach: "Shadow domain experts in their natural environment"
+methods:
+  - "Workflow observation and documentation"
+  - "Decision point identification"
+  - "Tool integration mapping"
+  - "Failure mode analysis"
+
+output: "Natural language process descriptions"
+example: "When designing a blender, I first check the target capacity, then calculate motor requirements based on intended use..."
+```
+
+#### Phase 2: Process Translation
+```yaml
+approach: "Convert natural language workflows to executable BPMN"
+methods:
+  - "Automated process generation using LLMs"
+  - "Expert validation and refinement"
+  - "Integration with existing tools"
+  - "Performance optimization"
+
+output: "Executable BPMN processes with embedded domain knowledge"
+```
+
+#### Phase 3: UI Generation
+```yaml
+approach: "Generate expert-specific interfaces for process interaction"
+methods:
+  - "Persona-based UI generation"
+  - "Task-specific interface optimization"
+  - "Real-time adaptation based on usage"
+  - "Cross-domain pattern sharing"
+
+output: "Dynamic, adaptive interfaces that feel native to domain experts"
+```
+
+#### Phase 4: Self-Improvement
+```yaml
+approach: "Continuous learning and evolution"
+methods:
+  - "Process execution analysis"
+  - "Expert feedback integration"
+  - "Performance metrics tracking"
+  - "Knowledge gap identification"
+
+output: "Expert systems that become more expert over time"
+```
+
+### The Expert System Transformation
+
+**From**: Static knowledge bases with rigid interfaces
+**To**: Dynamic, adaptive, self-improving systems that capture and amplify human expertise
+
+**Key Breakthrough**: Recognizing that both domain knowledge AND user interfaces are processes that can be generated, optimized, and evolved.
+
+**Result**: True expert systems that don't just store expertise, but actively participate in and enhance expert workflows.
+
+This represents the culmination of decades of expert system research - finally achieving systems that truly capture and amplify human expertise by recognizing that expertise itself is fundamentally process-based, not rule-based.

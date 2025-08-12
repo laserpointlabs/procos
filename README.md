@@ -19,9 +19,9 @@ git clone <your-repo-url> procos
 cd procos
 
 # Start the system (one command!)
-./scripts/start.sh
+./procos.sh start
 
-# Deploy sample processes
+# Deploy sample processes (optional)
 python scripts/deploy_processes.py
 
 # Test AI query workflow
@@ -29,6 +29,14 @@ curl -X POST localhost:8080/engine-rest/process-definition/key/ai_query/start \
   -H "Content-Type: application/json" \
   -d '{"variables": {"query": {"value": "Hello ProcOS!"}}}'
 ```
+
+## 🧪 Development
+
+- Python 3.11+
+- Create `.env` from `env.example`
+- Manage stack: `./procos.sh start|stop|status|logs|test|down`
+- Run tests: `make pytest`
+- CI runs lint and tests on push/PR
 
 ## 📁 **Repository Structure**
 

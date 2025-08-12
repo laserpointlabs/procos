@@ -1,3 +1,27 @@
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+
+# Environments
+.venv/
+venv/
+
+# OS
+.DS_Store
+
+# Logs & artifacts
+logs/
+*.log
+
+# IDE
+.vscode/
+.idea/
+
+# Docker
+.docker/
+
 # ProcOS .gitignore
 
 # Python

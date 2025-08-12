@@ -24,7 +24,7 @@ from camunda.external_task.external_task import ExternalTask, TaskResult
 from camunda.external_task.external_task_worker import ExternalTaskWorker
 from dotenv import load_dotenv
 from rich.console import Console
-from rich.logging import RichHandler
+from rich.logging import RichHandler  # noqa: F401 (imported for side-effects in logging)
 
 # Load environment
 load_dotenv()
@@ -117,7 +117,7 @@ class GenericWorker:
             # Try to parse JSON if possible
             try:
                 result_data["json"] = response.json()
-            except:
+            except ValueError:
                 result_data["json"] = None
             
             logger.info(f"✅ HTTP {method} {url} completed: {response.status_code}")

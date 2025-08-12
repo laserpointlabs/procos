@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-
-import os
 import importlib
 
 
@@ -13,7 +11,7 @@ def test_config_validation_pass(monkeypatch):
     monkeypatch.setenv("CAMUNDA_READY_JITTER_SECONDS", "0.1")
 
     mk = importlib.import_module("src.microkernel.procos_kernel")
-    cfg = mk.ProcOSConfig()
+    _ = mk.ProcOSConfig()
     # Should not raise in validation when calling via kernel
     kernel = mk.ProcOSKernel()
     # Run only validate method

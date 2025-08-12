@@ -36,12 +36,14 @@ jobs:
         run: |
           source venv/bin/activate
           ruff --version
+          # Non-blocking lint for now; adjust later to block
           ruff check || true
 
       - name: Format check (black)
         run: |
           source venv/bin/activate
           black --version
+          # Non-blocking format check for now
           black --check . || true
 
       - name: Run unit tests
@@ -49,6 +51,7 @@ jobs:
           CAMUNDA_BASE_URL: http://localhost:8080
         run: |
           source venv/bin/activate
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
           pytest -q
 
 

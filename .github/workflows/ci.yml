@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, feature/**, fix/** ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install system deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-venv
+
+      - name: Install Python dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          # Minimal test deps; project uses stdlib/requests/etc
+          pip install pytest ruff black requests redis pika rich python-dotenv
+
+      - name: Lint (ruff)
+        run: |
+          source venv/bin/activate
+          ruff --version
+          ruff check || true
+
+      - name: Format check (black)
+        run: |
+          source venv/bin/activate
+          black --version
+          black --check . || true
+
+      - name: Run unit tests
+        env:
+          CAMUNDA_BASE_URL: http://localhost:8080
+        run: |
+          source venv/bin/activate
+          pytest -q
+
+

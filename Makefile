@@ -6,7 +6,7 @@ include .env
 export
 endif
 
-.PHONY: help up down stop stack-start stack-stop start status logs test lint format health
+.PHONY: help up down stop stack-start stack-stop start status logs test lint format health pytest
 
 help:
 	@echo "Targets:"
@@ -20,6 +20,7 @@ help:
 	@echo "  logs          - ./procos.sh logs -f"
 	@echo "  test          - ./procos.sh test"
 	@echo "  health        - python scripts/health_check.py"
+	@echo "  pytest        - run unit tests"
 	@echo "  lint          - ruff/flake8 if available"
 	@echo "  format        - black if available"
 
@@ -53,5 +54,8 @@ lint:
 
 format:
 	-black . || true
+
+pytest:
+	pytest -q || true
 
 

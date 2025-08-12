@@ -14,6 +14,8 @@ License: MIT
 """
 
 import asyncio
+import json
+import random
 import logging
 import os
 import signal
@@ -34,6 +36,7 @@ load_dotenv()
 # Setup logging using centralized configuration
 sys.path.append(str(Path(__file__).parent.parent))
 from utils.logging_config import get_kernel_logger
+from utils.metrics import KernelMetrics
 
 logger = get_kernel_logger("kernel")
 console = Console()
@@ -62,6 +65,14 @@ class ProcOSConfig:
         self.readiness_file = Path(os.getenv('KERNEL_READINESS_FILE', '/tmp/procos.ready'))
         self.max_health_failures = int(os.getenv('HEALTH_MAX_CONSECUTIVE_FAILURES', '5'))
         self.health_backoff_base_seconds = float(os.getenv('HEALTH_BACKOFF_BASE_SECONDS', '1.5'))
+
+        # Camunda readiness polling
+        self.camunda_ready_max_attempts = int(os.getenv('CAMUNDA_READY_MAX_ATTEMPTS', '30'))
+        self.camunda_ready_base_sleep_seconds = float(os.getenv('CAMUNDA_READY_BASE_SLEEP_SECONDS', '2.0'))
+        self.camunda_ready_jitter_seconds = float(os.getenv('CAMUNDA_READY_JITTER_SECONDS', '0.75'))
+
+        # Metrics
+        self.metrics_snapshot_file = Path(os.getenv('KERNEL_METRICS_SNAPSHOT_FILE', 'logs/kernel/metrics.json'))
         
         # Worker settings
         self.worker_max_tasks = int(os.getenv('WORKER_MAX_TASKS', '10'))
@@ -79,16 +90,27 @@ class ProcOSKernel:
         self.config = ProcOSConfig()
         self.running = True
         self.startup_time = None
+        self.metrics = KernelMetrics()
         
         # Setup signal handlers
         signal.signal(signal.SIGINT, self._signal_handler)
         signal.signal(signal.SIGTERM, self._signal_handler)
         
-        logger.info(f"ProcOS Kernel v{self.config.version} initializing...")
+        logger.info(json.dumps({
+            "event": "kernel_starting",
+            "component": "kernel",
+            "version": self.config.version,
+            "env": self.config.env,
+        }))
 
     def _signal_handler(self, signum, frame):
         """Handle shutdown signals gracefully"""
-        logger.info(f"Received signal {signum}, initiating graceful shutdown...")
+        logger.info(json.dumps({
+            "event": "kernel_signal",
+            "component": "kernel",
+            "signal": int(signum),
+            "message": "initiating graceful shutdown",
+        }))
         self.running = False
 
     def bootstrap(self) -> None:
@@ -105,7 +127,10 @@ class ProcOSKernel:
         6. Enter monitoring mode
         """
         try:
-            logger.info("🚀 ProcOS Kernel Bootstrap Starting")
+            logger.info(json.dumps({
+                "event": "kernel_bootstrap_start",
+                "component": "kernel",
+            }))
             
             # Phase 1: Environment validation
             self._validate_environment()
@@ -122,13 +147,21 @@ class ProcOSKernel:
             
             # Phase 5: Enter monitoring mode
             self.startup_time = time.time()
-            logger.info("✅ ProcOS Kernel Bootstrap Complete")
+            logger.info(json.dumps({
+                "event": "kernel_bootstrap_complete",
+                "component": "kernel",
+                "phase": "monitoring",
+            }))
             
             # Phase 6: Monitor and sleep (everything else is process-driven)
             self._enter_monitoring_mode()
             
         except Exception as e:
-            logger.error(f"❌ Bootstrap failed: {e}")
+            logger.error(json.dumps({
+                "event": "kernel_bootstrap_failed",
+                "component": "kernel",
+                "error": str(e),
+            }))
             sys.exit(1)
 
     def _validate_environment(self) -> None:
@@ -144,11 +177,23 @@ class ProcOSKernel:
             logger.warning(f"Process directory not found: {self.config.process_path}")
             self.config.process_path.mkdir(parents=True, exist_ok=True)
         
-        # Validate configuration
-        required_vars = ['CAMUNDA_BASE_URL']
-        missing = [var for var in required_vars if not os.getenv(var)]
-        if missing:
-            raise RuntimeError(f"Missing required environment variables: {missing}")
+        # Validate configuration (aggregate errors)
+        errors = []
+        # Required envs
+        if not os.getenv('CAMUNDA_BASE_URL'):
+            errors.append("Missing CAMUNDA_BASE_URL")
+        # Numeric validations
+        if self.config.health_check_interval <= 0:
+            errors.append("HEALTH_CHECK_INTERVAL must be > 0")
+        if self.config.health_backoff_base_seconds <= 1.0:
+            errors.append("HEALTH_BACKOFF_BASE_SECONDS should be > 1.0")
+        if self.config.camunda_ready_max_attempts <= 0:
+            errors.append("CAMUNDA_READY_MAX_ATTEMPTS must be > 0")
+        if self.config.camunda_ready_base_sleep_seconds <= 0:
+            errors.append("CAMUNDA_READY_BASE_SLEEP_SECONDS must be > 0")
+
+        if errors:
+            raise RuntimeError("Config validation errors: " + "; ".join(errors))
         
         logger.info("✅ Environment validation complete")
 
@@ -156,11 +201,12 @@ class ProcOSKernel:
         """Phase 2: Wait for Camunda engine to be ready"""
         logger.info("⏳ Phase 2: Waiting for Camunda Engine")
         
-        max_attempts = 30
+        max_attempts = self.config.camunda_ready_max_attempts
         attempt = 0
         
         while attempt < max_attempts and self.running:
             try:
+                self.metrics.increment("camunda_wait_attempts")
                 response = requests.get(
                     f"{self.config.camunda_api}/engine",
                     timeout=5
@@ -182,7 +228,9 @@ class ProcOSKernel:
                 pass
             
             attempt += 1
-            time.sleep(2)
+            # Sleep with jitter to avoid thundering herd
+            sleep_for = self.config.camunda_ready_base_sleep_seconds + random.uniform(0, self.config.camunda_ready_jitter_seconds)
+            time.sleep(sleep_for)
             logger.info(f"Waiting for Camunda... ({attempt}/{max_attempts})")
         
         if not self.running:
@@ -307,7 +355,17 @@ class ProcOSKernel:
                 logger.error(f"Error in monitoring loop: {e}")
                 time.sleep(5)
         
-        logger.info("🛑 ProcOS Kernel shutting down gracefully")
+        # Emit metrics snapshot and shutdown event
+        try:
+            self.metrics.write_snapshot(self.config.metrics_snapshot_file)
+            self.metrics.log_snapshot(logger)
+        except Exception as e:
+            logger.debug(f"Metrics snapshot failed: {e}")
+
+        logger.info(json.dumps({
+            "event": "kernel_stopping",
+            "component": "kernel",
+        }))
 
     def _display_startup_summary(self) -> None:
         """Display a nice startup summary"""
@@ -374,10 +432,12 @@ class ProcOSKernel:
                 logger.debug("Process instance endpoint reachable")
 
             logger.debug(f"🔍 Health check OK for engine '{engine_name}'")
+            self.metrics.increment("health_checks_ok")
             return True
 
         except Exception as e:
             logger.error(f"🚨 Health check failed: {e}")
+            self.metrics.increment("health_checks_fail")
             return False
 
 def main():

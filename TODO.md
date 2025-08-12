@@ -28,12 +28,12 @@ Legend:
 
 ---
 ## 2. Microkernel Hardening (P0/P1)
-- [ ] Centralized config validation (aggregate all missing/invalid vars before exit)
-- [~] Retry/backoff constants for Camunda polling (exponential jitter)
-- [ ] Structured startup event JSON log (component=kernel, phase=bootstrap_complete)
-- [ ] Graceful shutdown event emission (kernel_stopping)
-- [ ] Lightweight internal metrics collector (in-memory counters; export on demand)
-- [ ] Unit tests: config validation, health check error path, Camunda timeout
+- [x] Centralized config validation (aggregate all missing/invalid vars before exit)
+- [x] Retry/backoff constants for Camunda polling (exponential jitter)
+- [x] Structured startup event JSON log (component=kernel, phase=bootstrap_complete)
+- [x] Graceful shutdown event emission (kernel_stopping)
+- [x] Lightweight internal metrics collector (in-memory counters; export on demand)
+- [x] Unit tests: config validation, health check error path, Camunda timeout
 
 ---
 ## 3. Core BPMN Set (P0)

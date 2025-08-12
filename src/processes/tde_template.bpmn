@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+  id="Definitions_ProcOS_TDE" targetNamespace="http://procos/tde">
+  <bpmn:process id="tde_template" name="TDE Template">
+    <bpmn:startEvent id="Start" />
+    <bpmn:exclusiveGateway id="ModeGateway" name="Mode?" />
+    <bpmn:task id="DeterministicTask" name="Run Deterministic Adapter" />
+    <bpmn:task id="ProbabilisticTask" name="Run LLM Loop" />
+    <bpmn:task id="Report" name="Report Outcome" />
+    <bpmn:endEvent id="End" />
+
+    <bpmn:sequenceFlow id="f1" sourceRef="Start" targetRef="ModeGateway" />
+    <bpmn:sequenceFlow id="f2" sourceRef="ModeGateway" targetRef="DeterministicTask" name="deterministic" />
+    <bpmn:sequenceFlow id="f3" sourceRef="ModeGateway" targetRef="ProbabilisticTask" name="probabilistic" />
+    <bpmn:sequenceFlow id="f4" sourceRef="DeterministicTask" targetRef="Report" />
+    <bpmn:sequenceFlow id="f5" sourceRef="ProbabilisticTask" targetRef="Report" />
+    <bpmn:sequenceFlow id="f6" sourceRef="Report" targetRef="End" />
+  </bpmn:process>
+</bpmn:definitions>
+

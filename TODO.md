@@ -38,11 +38,11 @@ Legend:
 ---
 ## 3. Core BPMN Set (P0)
 Directory: `src/processes/`
-- [ ] `root_peo.bpmn` (aka system orchestrator) — phases: init_env → load_knowledge (call) → enable_generation → idle_monitor
-- [ ] `knowledge_preload.bpmn` — iterate sources → chunk → embed → store → record manifest
+- [x] `root_peo.bpmn` (aka system orchestrator) — phases: init_env → load_knowledge (call) → enable_generation → idle_monitor (stub)
+- [x] `knowledge_preload.bpmn` — iterate sources → chunk → embed → store → record manifest (stub within root_peo)
 - [ ] `rag_query.bpmn` — accept query → retrieve (vector) → synthesize (LLM) → return answer
 - [ ] `process_generation.bpmn` — input intent → gather context (patterns+examples) → draft BPMN (LLM) → validate → approval (dev bypass) → commit/deploy
-- [ ] `tde_template.bpmn` — receive task spec → select execution mode (probabilistic vs deterministic) → execute → report outcome
+- [x] `tde_template.bpmn` — receive task spec → select execution mode (probabilistic vs deterministic) → execute → report outcome (stub)
 - [ ] Error boundary events + escalation pattern library (shared subprocess) added to repo
 - [ ] BPMN metadata convention doc (name, version, intent, domain, created_by, validation_hash)
 - [ ] Basic BPMN linter checklist (manual initially)

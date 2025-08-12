@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+  id="Definitions_ProcOS_RootPEO" targetNamespace="http://procos/peo">
+  <bpmn:process id="system_orchestrator" name="System Orchestrator (Root PEO)">
+    <bpmn:startEvent id="Start" name="Start" />
+    <bpmn:task id="InitEnv" name="Initialize Environment" />
+    <bpmn:callActivity id="PreloadKnowledge" name="Load Knowledge" calledElement="knowledge_preload" />
+    <bpmn:task id="EnableGeneration" name="Enable Generation" />
+    <bpmn:endEvent id="Idle" name="Idle/Monitor" />
+
+    <bpmn:sequenceFlow id="f1" sourceRef="Start" targetRef="InitEnv" />
+    <bpmn:sequenceFlow id="f2" sourceRef="InitEnv" targetRef="PreloadKnowledge" />
+    <bpmn:sequenceFlow id="f3" sourceRef="PreloadKnowledge" targetRef="EnableGeneration" />
+    <bpmn:sequenceFlow id="f4" sourceRef="EnableGeneration" targetRef="Idle" />
+  </bpmn:process>
+  
+  <bpmn:process id="knowledge_preload" name="Knowledge Preload (Stub)">
+    <bpmn:startEvent id="KStart" />
+    <bpmn:task id="ScanSources" name="Scan Sources" />
+    <bpmn:task id="EmbedStore" name="Embed and Store" />
+    <bpmn:endEvent id="KEnd" />
+
+    <bpmn:sequenceFlow id="kf1" sourceRef="KStart" targetRef="ScanSources" />
+    <bpmn:sequenceFlow id="kf2" sourceRef="ScanSources" targetRef="EmbedStore" />
+    <bpmn:sequenceFlow id="kf3" sourceRef="EmbedStore" targetRef="KEnd" />
+  </bpmn:process>
+</bpmn:definitions>
+

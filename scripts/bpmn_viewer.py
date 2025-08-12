@@ -24,6 +24,13 @@ ROOT = Path(__file__).resolve().parents[1]
 PROC_DIR = ROOT / "src" / "processes"
 
 app = Flask(__name__)
+@app.route("/static_bpmn/<path:filename>")
+def serve_static_bpmn(filename: str):
+    base = ROOT / "scripts" / "static" / "bpmn"
+    if ".." in filename or filename.startswith("/"):
+        abort(400)
+    return send_from_directory(base, filename)
+
 
 
 def list_bpmn_files() -> List[str]:
@@ -72,11 +79,15 @@ VIEWER_HTML = """
       html, body, #canvas { height: 100%; margin: 0; padding: 0; }
       body { font-family: sans-serif; }
     </style>
-    <!-- bpmn-js via UNPKG CDN -->
-    <link rel="stylesheet" href="https://unpkg.com/bpmn-js@14.7.0/dist/assets/diagram-js.css" />
-    <link rel="stylesheet" href="https://unpkg.com/bpmn-js@14.7.0/dist/assets/bpmn-font/css/bpmn.css" />
-    <script src="https://unpkg.com/bpmn-js@14.7.0/dist/bpmn-viewer.development.js"></script>
-    <script src="https://unpkg.com/bpmn-js@14.7.0/dist/bpmn-modeler.development.js"></script>
+    <!-- Local static assets fallback first, then CDN as backup -->
+    <link rel="stylesheet" href="/static_bpmn/diagram-js.css" />
+    <link rel="stylesheet" href="/static_bpmn/bpmn-font/css/bpmn.css" />
+    <script src="/static_bpmn/bpmn-viewer.js"></script>
+    <script>
+      if (!window.BpmnJS) {
+        document.write('<script src="https://unpkg.com/bpmn-js@14.7.0/dist/bpmn-viewer.development.js"><\/script>');
+      }
+    </script>
   </head>
   <body>
     <div id="canvas"></div>

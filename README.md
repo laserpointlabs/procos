@@ -38,6 +38,10 @@ curl -X POST localhost:8080/engine-rest/process-definition/key/ai_query/start \
 - Run tests: `make pytest`
 - CI runs lint and tests on push/PR
 
+Note: Legacy external workers are transitioning into PDO/TDE BPMN-driven
+execution. Avoid adding new code under `src/workers/`; prefer BPMN tasks with
+deterministic adapters or probabilistic TDEs.
+
 ## 📁 **Repository Structure**
 
 ```

@@ -229,27 +229,13 @@ start_microkernel() {
 }
 
 start_workers() {
-    print_step "Starting external task workers..."
+    print_step "Workers deprecated — using PDO/TDE model"
     
     cd "$PROJECT_ROOT"
     
-    # Activate virtual environment
-    source venv/bin/activate
-    
-    # Start workers (if they exist)
-    if [ -f "src/workers/generic_worker.py" ]; then
-        echo "Starting generic worker..."
-        python -m src.workers.generic_worker &
-        echo $! > generic_worker.pid
-    fi
-    
-    if [ -f "src/workers/ai_worker.py" ]; then
-        echo "Starting AI worker..."
-        python -m src.workers.ai_worker &
-        echo $! > ai_worker.pid
-    fi
-    
-    print_success "Workers started"
+    echo "External task workers have been absorbed into PDO/TDE BPMN design."
+    echo "No worker processes will be started from this script."
+    print_success "Proceeding without legacy workers"
 }
 
 show_status() {

@@ -59,6 +59,9 @@ class ProcOSConfig:
         # Health monitoring
         self.health_check_interval = int(os.getenv('HEALTH_CHECK_INTERVAL', '30'))
         self.health_check_enabled = os.getenv('HEALTH_CHECK_ENABLED', 'true').lower() == 'true'
+        self.readiness_file = Path(os.getenv('KERNEL_READINESS_FILE', '/tmp/procos.ready'))
+        self.max_health_failures = int(os.getenv('HEALTH_MAX_CONSECUTIVE_FAILURES', '5'))
+        self.health_backoff_base_seconds = float(os.getenv('HEALTH_BACKOFF_BASE_SECONDS', '1.5'))
         
         # Worker settings
         self.worker_max_tasks = int(os.getenv('WORKER_MAX_TASKS', '10'))
@@ -168,6 +171,11 @@ class ProcOSKernel:
                     if engines:
                         engine_name = engines[0].get('name', 'default')
                         logger.info(f"✅ Camunda engine '{engine_name}' ready")
+                        # Write readiness marker
+                        try:
+                            self.config.readiness_file.write_text(str(int(time.time())))
+                        except Exception as e:
+                            logger.warning(f"Could not write readiness file: {e}")
                         return
                 
             except requests.exceptions.RequestException:
@@ -259,6 +267,7 @@ class ProcOSKernel:
         
         # Main monitoring loop
         last_health_check = 0
+        consecutive_failures = 0
         
         while self.running:
             try:
@@ -268,8 +277,25 @@ class ProcOSKernel:
                 if (self.config.health_check_enabled and 
                     current_time - last_health_check > self.config.health_check_interval):
                     
-                    self._perform_health_check()
-                    last_health_check = current_time
+                    ok = self._perform_health_check()
+                    if ok:
+                        consecutive_failures = 0
+                        last_health_check = current_time
+                    else:
+                        consecutive_failures += 1
+                        # Exponential backoff on failures to avoid hammering Camunda
+                        backoff = min(60.0, (self.config.health_backoff_base_seconds ** consecutive_failures))
+                        logger.warning(f"Health check failed (#{consecutive_failures}). Backing off {backoff:.1f}s")
+                        time.sleep(backoff)
+                        last_health_check = current_time
+
+                    # Update readiness marker if healthy
+                    if consecutive_failures == 0:
+                        try:
+                            if not self.config.readiness_file.exists():
+                                self.config.readiness_file.write_text(str(int(time.time())))
+                        except Exception as e:
+                            logger.debug(f"Readiness file update skipped: {e}")
                 
                 # Sleep for 1 second
                 time.sleep(1)
@@ -306,16 +332,53 @@ class ProcOSKernel:
         
         console.print(Panel(summary, title="ProcOS Microkernel", border_style="green"))
 
-    def _perform_health_check(self) -> None:
-        """Perform lightweight health check"""
+    def _perform_health_check(self) -> bool:
+        """Perform Camunda health diagnostics.
+
+        Returns:
+            bool: True if healthy, False otherwise.
+        """
         try:
-            response = requests.get(f"{self.config.camunda_api}/engine", timeout=5)
-            if response.status_code == 200:
-                logger.debug("🔍 Health check: All systems operational")
+            # 1) Engine list (primary readiness)
+            engine_resp = requests.get(f"{self.config.camunda_api}/engine", timeout=5)
+            if engine_resp.status_code != 200:
+                logger.warning(f"🚨 Health check: engine endpoint returned {engine_resp.status_code}")
+                return False
+
+            engines = engine_resp.json()
+            if not engines:
+                logger.warning("🚨 Health check: no engines reported")
+                return False
+
+            engine_name = engines[0].get('name', 'default')
+
+            # 2) Version info
+            version_resp = requests.get(f"{self.config.camunda_api}/version", timeout=5)
+            if version_resp.status_code == 200:
+                version = version_resp.json().get('version', 'unknown')
+                logger.debug(f"Camunda version: {version}")
             else:
-                logger.warning(f"🚨 Health check: Camunda returned {response.status_code}")
+                logger.debug("Camunda version endpoint not available")
+
+            # 3) Deployment count
+            dep_resp = requests.get(f"{self.config.camunda_api}/deployment", timeout=5)
+            if dep_resp.status_code == 200:
+                deployments = dep_resp.json()
+                logger.debug(f"Deployments: {len(deployments)}")
+            else:
+                logger.debug("Deployment list unavailable")
+
+            # 4) Active process instances (lightweight)
+            pi_resp = requests.get(f"{self.config.camunda_api}/process-instance?maxResults=1", timeout=5)
+            if pi_resp.status_code in (200, 204):
+                logger.debug("Process instance endpoint reachable")
+
+            logger.debug(f"🔍 Health check OK for engine '{engine_name}'")
+            return True
+
         except Exception as e:
             logger.error(f"🚨 Health check failed: {e}")
+            return False
 
 def main():
     """Main entry point for the ProcOS Kernel"""

@@ -18,17 +18,18 @@ Legend:
 
 ---
 ## 1. Bootstrap & Environment (P0)
-- [ ] Verify docker-compose brings up Camunda + Postgres (adjust ports/healthchecks if needed)
-- [ ] Create `.env` from `env.example` with mandatory values (CAMUNDA_BASE_URL, VECTOR_BACKEND, EMBEDDING_MODEL)
-- [ ] Ensure microkernel launched via compose (service entrypoint) or documented local cmd
+- [~] Verify docker-compose brings up Camunda + Postgres (adjust ports/healthchecks if needed)
+- [x] Create `.env` from `env.example` with mandatory values (CAMUNDA_BASE_URL, VECTOR_BACKEND, EMBEDDING_MODEL)
+- [x] Ensure microkernel launched via compose (service entrypoint) or documented local cmd
 - [ ] Add Makefile targets: up, down, logs, test, format
 - [ ] Extend `scripts/health_check.py` to assert: Camunda engine list, deployment count, version
-- [ ] Add simple readiness file `/tmp/procos.ready` after bootstrap success
+- [x] Add simple readiness file `/tmp/procos.ready` after bootstrap success
+- [x] Unified lifecycle script `procos.sh` (start/stop/restart/status/logs/test/down)
 
 ---
 ## 2. Microkernel Hardening (P0/P1)
 - [ ] Centralized config validation (aggregate all missing/invalid vars before exit)
-- [ ] Retry/backoff constants for Camunda polling (exponential jitter)
+- [~] Retry/backoff constants for Camunda polling (exponential jitter)
 - [ ] Structured startup event JSON log (component=kernel, phase=bootstrap_complete)
 - [ ] Graceful shutdown event emission (kernel_stopping)
 - [ ] Lightweight internal metrics collector (in-memory counters; export on demand)

@@ -223,3 +223,18 @@ Represent each step explicitly in BPMN to keep execution transparent and auditab
 - Expand governance (timeouts, retries, compensations) as formal templates.
 
 
+
+## Actor Model Analogy
+
+- **PEO as supervising actor**: The PEO instance behaves like a parent/supervisor actor. It owns orchestration state, routes messages (via BPMN gateways), supervises task lifecycles, and applies explicit fault handling strategies (boundary events, retries, compensations). It delegates work; it does not implement work.
+- **TDE instances as child actors**: Each TDE invocation acts like a short-lived child actor created to handle one task. It can execute deterministically (adapter call) or probabilistically (LLM-guided loop), then replies with structured outputs. PEO can fan out multiple TDEs (multi-instance) and join on their completion.
+- **Engine as runtime + mailbox**: The Camunda engine provides durable state, message delivery, and scheduling akin to an actor runtime/mailbox. It persists variables, correlates messages, handles retries/backoff, and resumes after failures or restarts.
+- **Addresses and messages**: `correlationId` functions like an address/trace identifier; BPMN variables, message correlations, and signals are the message mediums. There is no shared memory; all communication is explicit and persisted.
+- **Supervision and fault tolerance**: BPMN boundary events and compensations correspond to actor supervision strategies and sagas. Failures are handled through explicit routes, not hidden exceptions.
+
+Limitations of the analogy:
+- PEO/TDE are durable and can span minutes to days; classic actors/threads are typically ephemeral.
+- Work may execute across distributed services; there is no shared address space.
+- Governance (guardrails, auditing, explainability for probabilistic paths) is first-class here and not inherent in typical actor frameworks.
+
+One-liner: PEO is a supervising actor that spawns child actors (TDEs) to perform tasks and report back, while the engine acts as the durable runtime and mailbox that moves messages and persists state.

@@ -102,8 +102,9 @@ Here's what makes BPMN special:
 In ProcOS, literally everything is a process:
 
 ```mermaid
-graph TB
+graph LR
     subgraph "🖥️ Starting Up Your Computer"
+        direction LR
         A1([Power On]) --> A2[Check Hardware]
         A2 --> A3[Load Drivers]
         A3 --> A4[Start Services]
@@ -111,6 +112,7 @@ graph TB
     end
     
     subgraph "📁 Opening a File"
+        direction LR
         B1([User Clicks File]) --> B2[Check Permissions]
         B2 --> B3[Virus Scan]
         B3 --> B4[Load Content]
@@ -118,6 +120,7 @@ graph TB
     end
     
     subgraph "☕ Making Coffee (Future Feature!)"
+        direction LR
         C1([Start Coffee Process]) --> C2[Check Water]
         C2 --> C3[Heat Water]
         C3 --> C4[Grind Beans]
@@ -127,11 +130,11 @@ graph TB
     
     classDef start fill:#c8e6c9,stroke:#4caf50,stroke-width:3px
     classDef task fill:#e1f5fe,stroke:#2196f3,stroke-width:2px
-    classDef end fill:#ffcdd2,stroke:#f44336,stroke-width:3px
+    classDef end1 fill:#ffcdd2,stroke:#f44336,stroke-width:3px
     
     class A1,B1,C1 start
     class A2,A3,A4,B2,B3,B4,C2,C3,C4,C5 task
-    class A5,B5,C6 end
+    class A5,B5,C6 end1
 ```
 
 **The Beauty of Process-Driven Thinking:**

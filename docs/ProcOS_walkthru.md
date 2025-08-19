@@ -244,6 +244,37 @@ sequenceDiagram
     T-->>P: Return result variables (to orchestrator)
 ```
 
+```mermaid
+flowchart LR
+    subgraph TDE_Hybrid
+        direction LR
+        TS((Start)) --> M{mode}
+        M -- hybrid --> Fork[[Parallel split]]
+        Fork --> D1[Deterministic: select tool]
+        Fork --> P1[Probabilistic: start loop]
+        D1 --> D2[Run adapter or tool]
+        D2 --> D3[Deterministic result]
+        subgraph LLM_Loop
+            P1 --> Analyze[Analyze]
+            Analyze --> Act[Act]
+            Act --> Evaluate[Evaluate]
+            Evaluate -->|repeat until success or limit| Analyze
+        end
+        D3 -.-> Inject[Inject deterministic context]
+        Inject --> Evaluate
+        D3 --> Join[[Parallel join]]
+        Evaluate --> Join
+        Join --> TE((End))
+    end
+```
+
+### TDE Hybrid Mode
+
+
+
+
+
+
 ### Example TDE process definition (conceptual)
 
 ```mermaid
@@ -372,7 +403,7 @@ graph TB
     end
 
     subgraph Services
-        DAS[DAS (Ambient Intelligence)]
+        DAS["DAS (Ambient Intelligence)"]
         EVT[Event Bus]
         NOTIF[Notifier]
         ADP[Adapters Runner]

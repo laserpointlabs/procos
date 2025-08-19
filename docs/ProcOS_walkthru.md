@@ -111,15 +111,15 @@ A typical run from user intent to execution and learning.
 sequenceDiagram
     autonumber
     participant U as User
-    participant UI as Web UI / BPMN Editor
-    participant DAS as DAS (Ambient Intelligence)
+    participant UI as "Web UI / BPMN Editor"
+    participant DAS as "DAS (Ambient Intelligence)"
     participant K as Microkernel
     participant C as Camunda Engine
-    participant P as PEO/PDO (BPMN)
-    participant T as TDE Template (BPMN)
-    participant A as Adapter (Tool/API)
+    participant P as "PEO/PDO (BPMN)"
+    participant T as "TDE Template (BPMN)"
+    participant A as "Adapter (Tool/API)"
     participant X as External Systems
-    participant V as Vector Store / Object Storage
+    participant V as "Vector Store / Object Storage"
 
     U->>UI: Describe goal / start process
     UI->>DAS: Draft/Refine BPMN (optional)
@@ -270,14 +270,14 @@ flowchart LR
 flowchart LR
     subgraph DAS_Process
         direction LR
-        I["Capture intent (text/voice)"] --> R[Retrieve context/memory]
+        I["Capture intent (text/voice)"] --> R["Retrieve context/memory"]
         R --> G[Generate BPMN draft]
         G --> V[Validate/score]
-        V --> P[Propose to user]
-        P -->|approve| S[Store BPMN + prompts]
+        V --> P["Propose to user"]
+        P -->|approve| S["Store BPMN + prompts"]
         S --> D[Deploy/trigger]
-        D --> M[Monitor executions]
-        M --> L[Learn and suggest improvements]
+        D --> M["Monitor executions"]
+        M --> L["Learn and suggest improvements"]
         L --> G
     end
 ```
@@ -360,7 +360,7 @@ High-level architecture with clean boundaries and external integrations.
 ```mermaid
 graph TB
     subgraph Client
-        UI[Web UI / BPMN Editor]
+        UI["Web UI / BPMN Editor"]
     end
 
     subgraph Kernel
@@ -387,8 +387,8 @@ graph TB
 
     subgraph External
         IDP["Identity Provider (OIDC)"]
-        LLM[LLM Provider]
-        API[External APIs/Tools]
+        LLM["LLM Provider"]
+        API["External APIs/Tools"]
     end
 
     %% Core flows

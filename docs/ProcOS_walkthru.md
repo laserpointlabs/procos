@@ -5,7 +5,7 @@ This document explains, at a novice level, how ProcOS works and how the main pie
 ProcOS is a BPMN-first, process-oriented OS. You describe goals, ProcOS (via the DAS ambient intelligence) drafts BPMN processes, and the microkernel deploys and monitors execution on a BPMN engine. Orchestration lives in BPMN (PEO/PDO), and work is executed by TDE templates that can run deterministic tools or probabilistic LLM loops with guardrails.
 
 ```mermaid
-graph TD
+graph LR
     A[Describe goal] --> B[DAS drafts BPMN]
     B --> C[Review/edit in visual editor]
     C --> D[Microkernel boots & deploys]
@@ -61,7 +61,7 @@ erDiagram
         int id
         int definition_id
         string correlation_id
-        string status // running, completed, failed
+        string status
         datetime started_at
         datetime completed_at
     }
@@ -69,15 +69,15 @@ erDiagram
         int id
         int process_instance_id
         string name
-        string mode // deterministic | probabilistic
-        string status // started, succeeded, failed
+        string mode
+        string status
         datetime started_at
         datetime completed_at
     }
     ADAPTER {
         int id
-        string type // http, file, shell, python
-        string spec // adapter configuration
+        string type
+        string spec
     }
     ATTACHMENT {
         int id
@@ -90,8 +90,8 @@ erDiagram
     VECTOR_EVENT {
         int id
         string correlation_id
-        string kind // prompt, result, error, metric
-        string payload_ref // points to object storage
+        string kind
+        string payload_ref
         datetime created_at
     }
 ```
@@ -275,12 +275,6 @@ architecture-beta
     cam:R -- L:vec
 ```
 
-
-## Display not just diagrams, but also images
-
-Image taken from https://en.wikipedia.org/wiki/Business_Process_Model_and_Notation
-
-![BPMN Example](https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/BPMN_2.0_example.svg/640px-BPMN_2.0_example.svg.png)
 
 ---
 

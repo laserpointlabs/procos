@@ -151,6 +151,130 @@ sequenceDiagram
 ```
 
 
+## DAS and Step-by-step Linking Diagrams
+
+### Why ProcOS + DAS
+- Make processes visual, auditable, and changeable without coding.
+- Keep runtime tiny (microkernel) and put orchestration in BPMN.
+- Use DAS to draft, evolve, and optimize processes over time.
+
+### Link 1: Microkernel → PEO/PDO
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant U as User/DAS
+    participant K as Microkernel
+    participant C as Camunda Engine
+    participant P as PEO/PDO
+
+    U->>K: Provide goal / select process
+    K->>C: Boot and deploy BPMN models
+    U->>C: Start process instance
+    C-->>P: Create orchestrator instance with correlationId
+    Note over K,C: Kernel stays in monitor mode after deploy
+```
+
+### Link 2: PEO → TDE
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant P as PEO/PDO
+    participant T as TDE Template
+    participant A as Adapter
+
+    P->>T: Call Activity (taskSpec, mode)
+    alt Deterministic
+        T->>A: Run adapter/tool with inputs
+        A-->>T: Outputs
+    else Probabilistic
+        loop Governed LLM loop
+            T->>A: Act / Evaluate (optional tool calls)
+        end
+        A-->>T: Outputs + reasoning trace
+    end
+    T-->>P: Result variables
+    P->>P: Route next step / handle errors
+```
+
+### Example PEO process definition (conceptual)
+
+```mermaid
+flowchart LR
+    subgraph PEO_Example
+        S((Start)) --> Init[Init context]
+        Init --> G1{Ready?}
+        G1 -- Yes --> CallA[[Call TDE: Task A]]
+        G1 -- No --> Prep[Prepare data]
+        Prep --> CallA
+        CallA --> G2{Succeeded?}
+        G2 -- Yes --> E((End))
+        G2 -- No --> Retry[Retry or Compensate]
+        Retry --> CallA
+    end
+```
+
+### Example TDE process definition (conceptual)
+
+```mermaid
+flowchart LR
+    subgraph TDE_Template
+        TS((Start)) --> Mode{mode}
+        Mode -- deterministic --> Svc[Service: Adapter]
+        Mode -- probabilistic --> LoopStart[Enter LLM loop]
+        subgraph LLM_Loop
+            LoopStart --> Analyze[Analyze]
+            Analyze --> Act[Act]
+            Act --> Evaluate[Evaluate]
+            Evaluate -->|repeat until success/limit| Analyze
+        end
+        Svc --> TE((End))
+        Evaluate --> TE
+    end
+```
+
+### DAS process definition (conceptual)
+
+```mermaid
+flowchart LR
+    subgraph DAS_Process
+        I[Capture intent (text/voice)] --> R[Retrieve context/memory]
+        R --> G[Generate BPMN draft]
+        G --> V[Validate/score]
+        V --> P[Propose to user]
+        P -->|approve| S[Store BPMN + prompts]
+        S --> D[Deploy/trigger]
+        D --> M[Monitor executions]
+        M --> L[Learn and suggest improvements]
+        L --> G
+    end
+```
+
+## Bootstrapping the system
+1. Run the BPMN engine (Camunda) and ensure it is reachable.
+2. Start the microkernel to deploy available BPMN models and enter monitor mode.
+3. Create a minimal PEO/PDO and TDE template (from examples above) and deploy them.
+4. Use DAS to draft the first process from a simple goal; review and approve.
+5. Start the process, observe logs/traces, and iterate.
+
+## Grow an expert system with processes
+- Add new processes for recurring tasks; keep orchestration in BPMN.
+- Capture prompts, results, and errors in the vector store to improve over time.
+- Use DAS suggestions to refine gateways, guardrails, and adapter choices.
+
+```mermaid
+graph LR
+    Define[Define/Import BPMN] --> Run[Run processes]
+    Run --> Observe[Observe traces]
+    Observe --> Improve[Improve prompts and BPMN]
+    Improve --> Define
+    Observe --> Store[Store to vector store]
+    Store --> DAS[DAS learns and suggests]
+    DAS --> Define
+```
+
+
 ## Budget Breakdown
 
 High-level initial effort allocation (customize as needed):
@@ -230,7 +354,7 @@ graph TB
     end
 
     subgraph External
-        IDP[Identity Provider (OIDC)]
+        IDP["Identity Provider (OIDC)"]
         LLM[LLM Provider]
         API[External APIs/Tools]
     end

@@ -203,6 +203,7 @@ sequenceDiagram
 ```mermaid
 flowchart LR
     subgraph PEO_Example
+        direction LR
         S((Start)) --> Init[Init context]
         Init --> G1{Ready?}
         G1 -- Yes --> CallA[[Call TDE: Task A]]
@@ -215,11 +216,40 @@ flowchart LR
     end
 ```
 
+#### TDE hybrid mode: deterministic + probabilistic in parallel (context injection)
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant T as TDE
+    participant A as Deterministic Tool Adapter
+    participant L as Probabilistic Loop
+    participant X as External Systems
+
+    T->>A: Select tool and run deterministically
+    T->>L: Start probabilistic loop
+
+    par Deterministic execution
+        A->>X: Invoke chosen tool/API
+        X-->>A: Deterministic result
+    and Probabilistic exploration
+        loop Analyze / Act / Evaluate
+            L->>X: Optional tool calls / retrieval
+            X-->>L: Signals / data
+        end
+    end
+
+    A-->>L: Inject deterministic context/result
+    L-->>T: Combined outputs + reasoning trace
+    T-->>P: Return result variables (to orchestrator)
+```
+
 ### Example TDE process definition (conceptual)
 
 ```mermaid
 flowchart LR
     subgraph TDE_Template
+        direction LR
         TS((Start)) --> Mode{mode}
         Mode -- deterministic --> Svc[Service: Adapter]
         Mode -- probabilistic --> LoopStart[Enter LLM loop]

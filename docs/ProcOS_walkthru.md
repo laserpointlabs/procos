@@ -269,7 +269,8 @@ flowchart LR
 ```mermaid
 flowchart LR
     subgraph DAS_Process
-        I[Capture intent (text/voice)] --> R[Retrieve context/memory]
+        direction LR
+        I["Capture intent (text/voice)"] --> R[Retrieve context/memory]
         R --> G[Generate BPMN draft]
         G --> V[Validate/score]
         V --> P[Propose to user]
@@ -371,6 +372,7 @@ graph TB
     end
 
     subgraph Services
+        DAS[DAS (Ambient Intelligence)]
         EVT[Event Bus]
         NOTIF[Notifier]
         ADP[Adapters Runner]
@@ -389,6 +391,7 @@ graph TB
         API[External APIs/Tools]
     end
 
+    %% Core flows
     UI --> C
     K --> C
     C --> ADP
@@ -399,12 +402,27 @@ graph TB
     C --> EVT
     EVT --> NOTIF
     C --> VEC
-    VEC --> LLM
+
+    %% DAS integrations
+    UI --> DAS
+    DAS --> VEC
+    DAS --> LLM
+    DAS --> C
+
+    %% Notes (annotations)
+    noteK["Microkernel boots and deploys BPMN models; no orchestration at runtime"]
+    noteC["Engine executes BPMN (PEO/PDO/TDE), persists state, and resumes after failures"]
+    noteDAS["DAS drafts/refines BPMN, learns from vector store, and suggests improvements"]
+
+    K -.-> noteK
+    C -.-> noteC
+    DAS -.-> noteDAS
 
     style UI fill:#e1f5fe,stroke:#90caf9
     style K fill:#ede7f6,stroke:#b39ddb
     style C fill:#e8f5e9,stroke:#a5d6a7
     style ADP fill:#fffde7,stroke:#ffe082
+    style DAS fill:#e3f2fd,stroke:#64b5f6
     style VEC fill:#f3e5f5,stroke:#ce93d8
 ```
 

@@ -1,45 +1,51 @@
-## Procos — Start Here (For Managers)
+## ProcOS — Start Here (for managers)
 
-### In plain words
-Procos helps a subject-matter expert (SME) grow a simple “virtual operating system” around their know‑how. Think of it like growing an expert system step by step, not buying a big platform.
+### In one sentence
+ProcOS lets a subject‑matter expert grow a simple “virtual OS” around their work, step by step, with help from a built‑in digital assistant.
 
 ### What the tool does
-- Guides an SME (with a digital assistant) to capture how work should be done
-- Runs that work the same way every time
-- Records what happened and what was learned
-- Lets you add new steps or rules without a rebuild
+- Helps an SME describe how work should be done (in plain steps)
+- Turns those steps into simple process diagrams (BPMN)
+- Runs the process the same way every time
+- Saves discussions, tasks, tests, and results as knowledge
+- Lets you add/change steps without rebuilding apps
+
+### How the system grows
+- We grow only with BPMN processes.
+- To change behavior, you edit a diagram, not code.
+- Small, safe edits are easy to test and ship.
+
+### The three base parts
+1. Micro‑kernel: tiny core that boots, watches, and keeps the system stable
+2. PDO (Process Definition Orchestrator): runs a BPMN process end‑to‑end
+3. TDE (Task Definition Executor): does the actual work inside a step
+
+These parts stay small on purpose. You can start with a very small baseline, test it, and ship an MVP. Users can keep growing by adding processes and tasks over time.
 
 ### The digital assistant (DAS)
-- Watches all actions
+- Built in from day one
+- Sees actions as they happen
 - Stores discussions, tasks, tests, and results as knowledge
-- Surfaces this knowledge later when you design, run, or review work
+- Helps design and refine processes
+- Surfaces what worked (and what didn’t) when you make changes
 
-### How we grow the system
-We use only BPMN processes to describe work. This keeps changes clear and testable.
+### What you get at MVP
+- A minimal system that runs a few key processes (via PDO + TDE)
+- The micro‑kernel running and stable
+- DAS capturing context and showing results
+- A clear path to add more processes safely
 
-There are only three base parts:
-1. Micro‑kernel: a tiny core that keeps the system stable
-2. Process Definition Orchestrators (PDO): run BPMN processes end‑to‑end
-3. Task Definition Executors (TDE): do the concrete work inside each step
-
-With just these, an SME can start small (an MVP), test it, then ship it. Users can keep growing the system by adding new processes and tasks over time.
-
-### Why this matters
-- Shorter time to first value: ship an MVP quickly
-- Lower risk: changes are small, visible, and testable
-- Knowledge stays: what people discuss and learn is saved and reused
-- Less rework: add or change steps without rewriting apps
-
-### What you get on day one
-- A minimal system that runs a few key processes
-- The DAS capturing context and results
-- A clear path to add more processes and tasks
+### How teams use it (simple flow)
+1. SME describes the goal
+2. DAS drafts a BPMN process
+3. Team reviews and tweaks the steps
+4. Run it and see results
+5. DAS saves what happened and suggests improvements
 
 ### What this is not
 - Not a big platform rewrite
-- Not a lock‑in framework
-- Not a black box: processes are plain BPMN;
-  tasks are simple, testable units
+- Not a custom app per team
+- Not a black box: processes are plain BPMN; tasks are simple and testable
 
 ### The pitch
-Procos lets your teams start small, run real work, learn fast, and grow safely—using simple BPMN processes, a tiny core, and a built‑in assistant that turns actions into lasting knowledge.
+Start small. Run real work. Learn fast. Grow safely. ProcOS makes your expert knowledge runnable and easy to improve, using only simple BPMN processes and three small parts: micro‑kernel, PDO, and TDE.

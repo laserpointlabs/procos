@@ -1,45 +1,45 @@
-## Procos — Start Here
+## Procos — Start Here (For Managers)
 
-### The one-liner
-Procos is a small, composable set of services that work together like a virtual operating system for your software. Instead of hard-coding behavior into every app or team, you grow shared capabilities as services that any app can use.
+### In plain words
+Procos helps a subject-matter expert (SME) grow a simple “virtual operating system” around their know‑how. Think of it like growing an expert system step by step, not buying a big platform.
 
-### What it is
-- **Composable services**: Focused building blocks (e.g., identity/policy, process orchestration, messaging, state, observability) that can be run and evolved independently.
-- **A virtual OS for your domain**: Apps call common capabilities via clear APIs, rather than re-implementing them.
-- **Grow-as-you-go**: Start small with just what you need; add new capabilities without rewrites.
+### What the tool does
+- Guides an SME (with a digital assistant) to capture how work should be done
+- Runs that work the same way every time
+- Records what happened and what was learned
+- Lets you add new steps or rules without a rebuild
 
-### Why it matters
-- **Faster delivery**: Teams ship features, not boilerplate.
-- **Consistency and control**: Shared policies and behaviors are centrally defined and reused.
-- **Lower risk and cost**: Fewer one-off implementations; fewer reworks.
-- **Adaptable by design**: Capabilities evolve as services, not as tangled code in many apps.
+### The digital assistant (DAS)
+- Watches all actions
+- Stores discussions, tasks, tests, and results as knowledge
+- Surfaces this knowledge later when you design, run, or review work
 
-### How it works (at a glance)
-1. **Core services provide capabilities**: Identity/policy, messaging/events, process orchestration, storage/state, and telemetry.
-2. **Apps compose, don’t rebuild**: Apps call these services over stable contracts.
-3. **Capabilities are additive**: New services can be introduced without changing existing app code paths.
-4. **Policies are first-class**: Guardrails and governance ship as services, not slide decks.
+### How we grow the system
+We use only BPMN processes to describe work. This keeps changes clear and testable.
 
-### A simple example
-Start with identity/policy and messaging. Later add scheduling and workflow. Existing apps opt-in by calling the new services—no rewrites, no forks of shared libraries.
+There are only three base parts:
+1. Micro‑kernel: a tiny core that keeps the system stable
+2. Process Definition Orchestrators (PDO): run BPMN processes end‑to‑end
+3. Task Definition Executors (TDE): do the concrete work inside each step
 
-### What Procos is not
-- Not a framework rewrite or lock-in.
-- Not a replacement for your cloud or vendor tools.
-- Not a silver bullet—it's a way to standardize the boring parts so teams can focus on value.
+With just these, an SME can start small (an MVP), test it, then ship it. Users can keep growing the system by adding new processes and tasks over time.
 
-### Where we are today
-- MVP focus: define the smallest useful set of services and contracts.
-- Documentation-first: we will expand this section with architecture, glossary, and usage patterns.
+### Why this matters
+- Shorter time to first value: ship an MVP quickly
+- Lower risk: changes are small, visible, and testable
+- Knowledge stays: what people discuss and learn is saved and reused
+- Less rework: add or change steps without rewriting apps
 
-### How to read this documentation
-- Overview (this page)
-- Glossary of terms (coming soon)
-- Architecture at a glance (coming soon)
-- Common use cases and examples (coming soon)
-- FAQ (coming soon)
+### What you get on day one
+- A minimal system that runs a few key processes
+- The DAS capturing context and results
+- A clear path to add more processes and tasks
 
-### 30-second pitch
-Procos lets us grow a simple, shared “virtual OS” for our organization—capabilities like identity, policy, messaging, and workflows—so teams build on reliable services, ship faster, and keep control as we scale.
+### What this is not
+- Not a big platform rewrite
+- Not a lock‑in framework
+- Not a black box: processes are plain BPMN;
+  tasks are simple, testable units
 
-
+### The pitch
+Procos lets your teams start small, run real work, learn fast, and grow safely—using simple BPMN processes, a tiny core, and a built‑in assistant that turns actions into lasting knowledge.

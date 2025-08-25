@@ -8,6 +8,7 @@
 - PEO (orchestrator): [peo.md](./peo.md)
 - TDE (task executor): [tde.md](./tde.md)
 - Use cases: [use_cases.md](./use_cases.md)
+- RAG pipeline walkthrough: [rag_walkthrough.md](./rag_walkthrough.md)
 
 ### One-picture overview
 ```mermaid
@@ -26,9 +27,11 @@ graph TB
     click PEO "./peo.md" "PEO"
     click TDE "./tde.md" "TDE"
     click DAS "./das.md" "DAS"
+    click KB "../architecture.md" "Architecture"
 ```
 
 ### What to look for
 - Clear roles: micro‑kernel boots, PEO orchestrates, TDE executes, DAS learns
 - BPMN‑only growth: change diagrams, not code
 - MVP first: start small, add steps safely
+- Walkthrough: try the [RAG pipeline](./rag_walkthrough.md)

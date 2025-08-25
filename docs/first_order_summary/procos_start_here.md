@@ -22,7 +22,7 @@ ProcOS lets a subject‑matter expert grow a simple “virtual OS” around thei
 
 These parts stay small on purpose. You can start with a very small baseline, test it, and ship an MVP. Users can keep growing by adding processes and tasks over time.
 
-### The digital assistant (DAS)
+### The Digital Assistant Service (DAS)
 - Built in from day one
 - Sees actions as they happen
 - Stores discussions, tasks, tests, and results as knowledge
@@ -49,3 +49,12 @@ These parts stay small on purpose. You can start with a very small baseline, tes
 
 ### The pitch
 Start small. Run real work. Learn fast. Grow safely. ProcOS makes your expert knowledge runnable and easy to improve, using only simple BPMN processes and three small parts: micro‑kernel, PDO, and TDE.
+
+### Quick links
+- Index of this set: [INDEX.md](./INDEX.md)
+- Architecture: [architecture.md](./architecture.md)
+- DAS: [das.md](./das.md)
+- Micro‑kernel: [microkernel.md](./microkernel.md)
+- PEO: [peo.md](./peo.md)
+- TDE: [tde.md](./tde.md)
+- Use cases: [use_cases.md](./use_cases.md)

@@ -36,7 +36,7 @@ flowchart LR
 ```mermaid
 flowchart TB
     Start([Start]) --> Ingest[Ingest Documents]
-    Ingest --> Index[Index (embed + store)]
+    Ingest --> Index["Index (embed + store)"]
     StartQ([Question]) --> Retrieve[Retrieve top K]
     Retrieve --> Answer[Generate answer]
     Answer --> Save[Save logs/results]

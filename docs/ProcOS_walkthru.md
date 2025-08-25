@@ -268,13 +268,6 @@ flowchart LR
     end
 ```
 
-### TDE Hybrid Mode
-
-
-
-
-
-
 ### Example TDE process definition (conceptual)
 
 ```mermaid

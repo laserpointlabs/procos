@@ -4,6 +4,7 @@
 - SME writes steps in plain words
 - DAS drafts a BPMN diagram
 - Team reviews and runs it as an MVP
+- Completed processes can be selected elsewhere (e.g. process for preporcessing data in the data workbench)
 
 ```mermaid
 flowchart LR
@@ -25,8 +26,8 @@ flowchart LR
     Run --> Save[DAS saves results]
 ```
 
-### 3) Repeatable operations
-- PEO runs the same steps each time
+### 3) Repeatable operations 
+- PEO runs the same steps each time (may look backward and forward for context)
 - TDEs do the work
 - Results are tracked and learned from
 
